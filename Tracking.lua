@@ -33,6 +33,8 @@ local MODULE = "Tracking"
 function Tracking.Start()
 
 	DebugMsg(MODULE, "Tracking started")
+	
+	CLL.Tracking.isActive = true
 
 end
 
@@ -41,13 +43,27 @@ function Tracking.Stop()
 	
 	DebugMsg(MODULE, "Tracking stopped")
 
+	CLL.Tracking.isActive = false
+	
 end
 
 -- Return the results of the latest tracking process
 function Tracking.GetResults()
 
+	if CLL.Tracking.isActive then -- Tracking is currently in process and the new results aren't yet available
+		DebugMsg("Tracking is still in process. Results aren't updated yet!")
+		return
+	end
+	
 	return CLL.Tracking.results
 
+end
+
+-- Returns the status of the tracking process
+function Tracking.IsActive()
+
+	return CLL.Tracking.isActive
+	
 end
 
 
