@@ -39,7 +39,7 @@ function ContainerLootLogger:OnEnable()
 	local clientVersion, clientBuild = GetBuildInfo()
 
 	-- if settings.showLoginMessage then TotalAP.ChatMsg(format(L["%s %s for WOW %s loaded!"], addonName, TotalAP.versionString, clientVersion)); end
-	ChatMsg(format(L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"], addonName, CLL.version, clientVersion))
+	ChatMsg(format(L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"], "CLL", CLL.version, clientVersion))
 	
 	-- TotalAP.EventHandlers.RegisterAllEvents()
 	
