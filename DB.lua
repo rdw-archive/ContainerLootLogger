@@ -38,7 +38,9 @@ local tostring = tostring
 local pairs = pairs
 local UnitName = UnitName
 local GetRealmName = GetRealmName
+local GetLocale = GetLocale
 local DebugMsg = CLL.Debug.Print
+local GetFQCN = CLL.GetFQCN
 
 
 -- Print a formatted message

@@ -27,8 +27,10 @@ local ChatMsg = CLL.Output.Print
 local DebugMsg = CLL.Debug.Print
 local match = string.match
 local tostring = tostring
+local pairs = pairs
 local L = CLL.L
 local wipe = wipe
+local GetLocale = GetLocale
 
 -- Locals and constants
 local MODULE = "Tracking"
