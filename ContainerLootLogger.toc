@@ -5,9 +5,30 @@
 ## Author: Cakechart
 ## SavedVariables: ContainerLootLoggerDB
 ## OptionalDeps:Libs\LibStub\LibStub.lua,Ace3
+
 Locales\Locales.xml
-CLL.lua
+
+## Initialisation - must be the first item
+Init.lua
+
+## Modules - order is arbitrary (aside from shared output/debugging functionality)
+Debug.lua
+Output.lua
+
+DB.lua
+Tracking.lua
+Statistics.lua
+
+## User interaction - requires modules to be loaded
+SlashCmds.lua
+
+## Addon loader - should be the last item
+ContainerLootLogger.lua
+
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 #@end-no-lib-strip@

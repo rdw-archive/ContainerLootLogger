@@ -1,12 +1,9 @@
--- http://wowwiki.wikia.com/wiki/Localizing_an_addon -> FrameXML/GlobalStrings.lua.  -> LibDeformat-3.0 to detect system messages (CHAT_MSG_LOOT format?)
 
 -- TODO: debug msg = use addon name
 -- if container is opened but item not cleared / bags full, it needs to discard the attempt
 -- Bug if looting mobs (gold - warden tower quest) after mouseovering but not opening container (bloodhunter's quarry)
 
-local version = "1.0"; -- getMetaData
-
-local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger") -- Default locale = enGB (also US), most others are still TODO
+ -- Default locale = enGB (also US), most others are still TODO
 
 local currentItem = "<none>";
 local lastUsedSpell = "<none>";
