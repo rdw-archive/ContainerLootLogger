@@ -34,3 +34,15 @@ CLL.Output = CLL.Output or {}
 CLL.SlashCmds = CLL.SlashCmds or {}
 CLL.Tracking = CLL.Tracking or {}
 CLL.Statistics = CLL.Statistics or {}
+
+-- Global functions (TODO: May be moved elsewhere later)
+-- Returns name - realm for a given character (or the current player if none were given)
+function CLL.GetFQCN(characterName, realm)
+	
+	characterName = (type(characterName) == "string" and characterName) or UnitName("player")
+	realm = (type(realm) == "string" and realm) or GetRealmName()
+	local key = format("%s - %s", characterName, realm)	 
+
+	return key
+	
+end

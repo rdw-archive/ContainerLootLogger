@@ -41,17 +41,6 @@ local GetRealmName = GetRealmName
 local DebugMsg = CLL.Debug.Print
 
 
--- Returns name - realm for a given character (or the current player if none were given)
-local function GetFQCN(characterName, realm)
-	
-	characterName = (type(characterName) == "string" and characterName) or UnitName("player")
-	realm = (type(realm) == "string" and realm) or GetRealmName()
-	local key = format("%s - %s", characterName, realm)	 
-
-	return key
-	
-end
-
 -- Print a formatted message
 function DB.Init()
 
