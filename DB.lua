@@ -89,9 +89,9 @@ end
 -- Adds a loot entry for the given fqcn (or the current player if none was given)
 -- @param entry
 -- @param fqcn
-function DB.AddEntry(entry, container, fqcn)
+function DB.AddEntry(key, entry, container, fqcn)
 
-	container = container or "UNKNOWN"
+	container = container or "UNKNOWN_CONTAINER"
 	fqcn = fqcn or GetFQCN()
 
 	local isValid = DB.ValidateEntry(entry)
@@ -103,10 +103,12 @@ function DB.AddEntry(entry, container, fqcn)
 	-- Update existing entry or create anew with default values to add the given loot info
 	DebugMsg(MODULE, "Adding entry for fqcn = " .. tostring(fqcn))
 	ContainerLootLoggerDB[fqcn][container] = ContainerLootLoggerDB[fqcn][container] or {} -- Init table if this container hasn't been added before
-	ContainerLootLoggerDB[fqcn][container].count = ContainerLootLoggerDB[fqcn][container].count and (ContainerLootLoggerDB[fqcn][container].count + 1) or 1
-	ContainerLootLoggerDB[fqcn][container].amount = ContainerLootLoggerDB[fqcn][container].amount and (ContainerLootLoggerDB[fqcn][container].amount + entry.amount) or entry.amount
-	ContainerLootLoggerDB[fqcn][container].type = ContainerLootLoggerDB[fqcn][container].type or entry.type -- Types shouldn't be able to change, no need to check this
-	ContainerLootLoggerDB[fqcn][container].locale = ContainerLootLoggerDB[fqcn][container].locale or GetLocale() -- ditto
+	ContainerLootLoggerDB[fqcn][container][key] = ContainerLootLoggerDB[fqcn][container][key] or {}
+	
+	ContainerLootLoggerDB[fqcn][container][key].count = ContainerLootLoggerDB[fqcn][container][key].count and (ContainerLootLoggerDB[fqcn][container][key].count + 1) or 1
+	ContainerLootLoggerDB[fqcn][container][key].amount = ContainerLootLoggerDB[fqcn][container][key].amount and (ContainerLootLoggerDB[fqcn][container][key].amount + entry.amount) or entry.amount
+	ContainerLootLoggerDB[fqcn][container][key].type = ContainerLootLoggerDB[fqcn][container][key].type or entry.type -- Types shouldn't be able to change, no need to check this
+	ContainerLootLoggerDB[fqcn][container][key].locale = ContainerLootLoggerDB[fqcn][container][key].locale or GetLocale() -- ditto
 	
 end
 
