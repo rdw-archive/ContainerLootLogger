@@ -11,10 +11,11 @@ Locales\Locales.xml
 ## Initialisation - must be the first item
 Init.lua
 
-## Modules - order is arbitrary
-DB.lua
+## Modules - order is arbitrary (aside from shared output/debugging functionality)
 Debug.lua
 Output.lua
+
+DB.lua
 Tracking.lua
 Statistics.lua
 
