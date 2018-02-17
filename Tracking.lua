@@ -22,14 +22,24 @@ if not CLL then return end
 Tracking = {}
 Tracking.results = {}
 
+-- Upvalues
+local DebugMsg = CLL.Debug.Print
+
+-- Locals and constants
+local MODULE = "Tracking"
+
 
 -- Start tracking for item and currency updates
 function Tracking:Start()
+
+	DebugMsg(MODULE, "Tracking started")
 
 end
 
 -- Stop tracking and store the results
 function Tracking:Stop()
+	
+	DebugMsg(MODULE, "Tracking stopped")
 
 end
 
