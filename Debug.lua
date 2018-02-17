@@ -12,3 +12,28 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise environment
+Debug = {}
+
+
+-- Upvalues
+local print = print
+local format = format
+
+
+-- Print a formatted debug message
+function Debug:Print(msg)
+
+	print(format("|c000072CA" .. "%s-Debug: " .. "|c00E6CC80%s", addonName, msg))
+	
+end
+
+
+-- Add module to shared environment
+CLL.Debug = Debug
