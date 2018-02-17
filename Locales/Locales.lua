@@ -11,3 +11,6 @@ L["Looted %s from %s: %d x %s"] = true;
 L["Received loot from %s: %d x %s"] = true;
 L["Debug mode enabled."] = true;
 L["Debug mode disabled."] = true;
+
+-- Rewritten stuff below (TODO: Remove the rest once the rewrite is done)
+L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"] = true

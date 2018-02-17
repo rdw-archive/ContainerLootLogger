@@ -34,6 +34,7 @@ CLL.Statistics = CLL.Statistics or {}
 
 -- Upvalues
 local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger")
+local ChatMsg = CLL.Output.Print
 
 
 --- Called on ADDON_LOADED
@@ -43,6 +44,10 @@ end
 
 --- Called on PLAYER_LOGIN or ADDON_LOADED (if addon is loaded-on-demand)
 function ContainerLootLogger:OnEnable()
+
+	local clientVersion, clientBuild = GetBuildInfo()
+	
+	ChatMsg(format(L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"], addonName, CLL.version, clientVersion))
 	
 end
 

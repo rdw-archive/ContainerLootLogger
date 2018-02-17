@@ -12,3 +12,28 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise environment
+Output = {}
+
+
+-- Upvalues
+local print = print
+local format = format
+
+
+-- Print a formatted message
+function Output.Print(msg)
+
+	print(format("|c00CC5500" .. "%s: " .. "|c00E6CC80%s", addonName, msg))
+	
+end
+
+
+-- Add module to shared environment
+CLL.Output = Output
