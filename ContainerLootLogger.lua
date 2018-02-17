@@ -12,15 +12,34 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise shared resources
+CLL.version = GetAddOnMetadata("ContainerLootLogger", "Version")
+
+-- Initialise modules
+CLL.DB = CLL.DB or {}
+CLL.Debug = CLL.Debug or {}
+CLL.Output = CLL.Output or {}
+CLL.SlashCmds = CLL.SlashCmds or {}
+CLL.Tracking = CLL.Tracking or {}
+CLL.Statistics = CLL.Statistics or {}
+
+
+-- Upvalues
+local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger")
+
+
+
 -- TODO: debug msg = use addon name
 -- if container is opened but item not cleared / bags full, it needs to discard the attempt
 -- Bug if looting mobs (gold - warden tower quest) after mouseovering but not opening container (bloodhunter's quarry)
 
-
-
-local version = "1.0"; -- getMetaData
-
-local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger") -- Default locale = enGB (also US), most others are still TODO
+ -- Default locale = enGB (also US), most others are still TODO
 
 local currentItem = "<none>";
 local lastUsedSpell = "<none>";
