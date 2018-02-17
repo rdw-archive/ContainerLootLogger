@@ -30,21 +30,21 @@ local MODULE = "Tracking"
 
 
 -- Start tracking for item and currency updates
-function Tracking:Start()
+function Tracking.Start()
 
 	DebugMsg(MODULE, "Tracking started")
 
 end
 
 -- Stop tracking and store the results
-function Tracking:Stop()
+function Tracking.Stop()
 	
 	DebugMsg(MODULE, "Tracking stopped")
 
 end
 
 -- Return the results of the latest tracking process
-function Tracking:GetResults()
+function Tracking.GetResults()
 
 	return CLL.Tracking.results
 

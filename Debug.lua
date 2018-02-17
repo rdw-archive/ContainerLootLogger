@@ -28,9 +28,9 @@ local format = format
 
 
 -- Print a formatted debug message
-function Debug:Print(msg)
+function Debug.Print(MODULE, msg)
 
-	print(format("|c000072CA" .. "%s-Debug: " .. "|c00E6CC80%s", addonName, msg))
+	print(format("|c000072CA" .. "%s-|c0033A5FD" .. MODULE .. ": " .. "|c00E6CC80%s", "CLL", msg))
 	
 end
 
