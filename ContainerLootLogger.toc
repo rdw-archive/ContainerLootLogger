@@ -19,5 +19,6 @@ ContainerLootLogger.lua
 
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
+Libs\AceLocale-3.0\AceEvent-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 #@end-no-lib-strip@
