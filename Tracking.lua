@@ -28,6 +28,7 @@ local DebugMsg = CLL.Debug.Print
 local match = string.match
 local tostring = tostring
 local L = CLL.L
+local wipe = wipe
 
 -- Locals and constants
 local MODULE = "Tracking"
@@ -43,34 +44,69 @@ local function ParseChatMsg(str)
 	if not str:match(LOOT_STRING) and not str:match(CURRENCY_STRING) then return end
 	
 	-- Extract item/currency ID and amount (if one was given)
-	local id, amount = str:match("item:(%d+).*(%d+)")
+	local id, amount = str:match("item:(%d+)"), str:match(".*" .. "x(%d+)")
 	local type = "INVALID"
 	if id then type = "item"
 	else -- Maybe it's a currency?
-		id, amount = str:match("currency:(%d+).*x(%d+)")
+		id, amount = str:match("currency:(%d+)"), str:match(".*" .. "x(%d*)")
 		if id then type = "currency" end
 	end
+	
 	amount = amount or 1
 	local link = str:match("\124c.*\124r") -- This stores much more information and can be used to retrieve bonuses etc. later (if needed)
 	
 	if type ~= "INVALID" then -- Can proceed as planned (with hopefully correct values)
 		return id, amount, type, link
 	end
+	
 	-- ... and in case there's something wrong...
 	DebugMsg(MODULE, "Error while parsing string '" .. tostring(str) .. "' - is neither item nor currency?")
 
  end
  
 
+ -- Adds a piece of loot (item or currency) as a result for the currently active scan, or the last one is none is in progress
+ local function AddLoot(id, amount, type, link)
+
+	DebugMsg(MODULE, "AddLoot with link - " .. tostring(link))
+	local results = CLL.Tracking.results
+	local entry = results[link]
+	
+	-- Add to existing entry, if one exists (create one otherwise)
+	if entry then -- This item or currency has been scanned before -> increase its total amount if it matches the other data
+	
+		if entry.type ~= type or entry.id ~= id then -- Something isn't right -> Stop here to be safe
+			DebugMsg("Mismatch in type or id for link - " .. tostring(link))
+			return
+		end
+		
+		-- Finally, increase the amount
+		amount = amount or 0 -- Just to make sure
+		entry.amount = entry.amount + tonumber(amount)
+	
+	else -- Create a new entry (no validation is necessary)
+		results[link] = { id = id, type = type, amount = amount }
+	end
+
+	DebugMsg(MODULE, "Updated entry for type = " .. tostring(type) .. ", id = " .. tostring(id) .. ", with amount = " .. tostring(amount))
+	-- Store the updated info in the shared table
+	CLL.Tracking.results = results
+ 
+ end
+ 
 -- Event handlers (TODO: Move elsewhere?)
 local function OnChatMsg(...)
 
 	local args = { ... }
 	local msg = args[2]
 	
+	-- Extract loot info (TODO: Gold isn't recognized, I believe)
 	local id, amount, type, link = ParseChatMsg(msg)
 	DebugMsg(MODULE, "Parsing link " .. tostring(link))
 	DebugMsg(MODULE, "Extracted type = " .. tostring(type) .. ", id = " .. tostring(id) .. ", amount = " .. tostring(amount))
+	
+	-- Add loot to the current tracking process
+	AddLoot(id, amount, type, tostring(link))
 	
 end
 
@@ -79,8 +115,10 @@ function Tracking.Start()
 
 	DebugMsg(MODULE, "Tracking started. Registering for events...")
 	
+	-- Re-start the scan and scrub any previous results
 	CLL.Tracking.isActive = true
-
+	wipe(CLL.Tracking.results)
+	
 	-- Register for spell casts
 	-- Register for loot containers
 	-- Register for special loot toast windows
@@ -106,9 +144,12 @@ function Tracking.Stop()
 	ContainerLootLogger:UnregisterEvent("CHAT_MSG_LOOT")
 	ContainerLootLogger:UnregisterEvent("CHAT_MSG_CURRENCY")
 	
+	-- Print results of the latest scan
+	Tracking.PrintResults()
+	
 end
 
--- Return the results of the latest tracking process
+-- Return the results of the latest tracking process (only if no scan is currently active)
 function Tracking.GetResults()
 
 	if CLL.Tracking.isActive then -- Tracking is currently in process and the new results aren't yet available
@@ -118,6 +159,18 @@ function Tracking.GetResults()
 	
 	return CLL.Tracking.results
 
+end
+
+-- Print out the currently saved results (this is also possible while a scan is still ongoing)
+function Tracking.PrintResults()
+
+	ChatMsg("-------------------------")
+	ChatMsg("Tracking results: ") -- TODO: L
+	for k, v in pairs(CLL.Tracking.results) do -- List this entry and all the saved data
+		ChatMsg(tostring(k) .. ": " .. tostring(v.amount) .. " (" .. tostring(v.type) .. " with ID " .. tostring(v.id) .. ")")
+	end
+	ChatMsg("-------------------------")
+	
 end
 
 -- Returns the status of the tracking process
