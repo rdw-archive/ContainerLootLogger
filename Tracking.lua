@@ -19,7 +19,7 @@ if not CLL then return end
 
 
 -- Initialise Tracking environment
-Tracking = {}
+local Tracking = {}
 Tracking.results = {}
 
 -- Upvalues

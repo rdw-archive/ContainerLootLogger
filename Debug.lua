@@ -19,7 +19,7 @@ if not CLL then return end
 
 
 -- Initialise environment
-Debug = {}
+local Debug = {}
 
 
 -- Upvalues
