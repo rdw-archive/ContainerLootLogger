@@ -54,7 +54,7 @@ local function ParseChatMsg(str)
 		if id then type = "currency" end
 	end
 	
-	amount = amount or 1
+	amount = (amount and tonumber(amount)) or 1 -- Explicit typecasting is done here to allow direct calculations and validation before adding it later
 	local link = str:match("\124c.*\124r") -- This stores much more information and can be used to retrieve bonuses etc. later (if needed)
 	
 	if type ~= "INVALID" then -- Can proceed as planned (with hopefully correct values)
