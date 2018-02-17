@@ -19,7 +19,9 @@ if not CLL then return end
 
 
 -- Initialise shared resources
+ContainerLootLogger = LibStub("AceAddon-3.0"):NewAddon("ContainerLootLogger", "AceConsole-3.0", "AceEvent-3.0")
 CLL.version = GetAddOnMetadata("ContainerLootLogger", "Version")
+CLL.obj = ContainerLootLogger
 
 -- Initialise modules
 CLL.DB = CLL.DB or {}
@@ -33,6 +35,21 @@ CLL.Statistics = CLL.Statistics or {}
 -- Upvalues
 local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger")
 
+
+--- Called on ADDON_LOADED
+function Addon:OnInitialize()
+	
+end
+
+--- Called on PLAYER_LOGIN or ADDON_LOADED (if addon is loaded-on-demand)
+function Addon:OnEnable()
+	
+end
+
+--- Called when addon is unloaded or disabled manually
+function Addon:OnDisable()
+
+end
 
 
 -- TODO: debug msg = use addon name
