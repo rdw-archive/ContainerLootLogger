@@ -5,8 +5,18 @@
 ## Author: Cakechart
 ## SavedVariables: ContainerLootLoggerDB
 ## OptionalDeps:Libs\LibStub\LibStub.lua,Ace3
+
 Locales\Locales.xml
-CLL.lua
+
+DB.lua
+Debug.lua
+Output.lua
+SlashCmds.lua
+Tracking.lua
+Statistics.lua
+
+ContainerLootLogger.lua
+
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
 Libs\AceLocale-3.0\AceLocale-3.0.xml
