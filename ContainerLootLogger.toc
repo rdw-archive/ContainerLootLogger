@@ -8,6 +8,8 @@
 
 Locales\Locales.xml
 
+Init.lua
+
 DB.lua
 Debug.lua
 Output.lua

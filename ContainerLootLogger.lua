@@ -18,25 +18,8 @@ local addonName, CLL = ...
 if not CLL then return end
 
 
--- Initialise shared resources
-ContainerLootLogger = LibStub("AceAddon-3.0"):NewAddon("ContainerLootLogger", "AceConsole-3.0", "AceEvent-3.0")
-CLL.version = GetAddOnMetadata("ContainerLootLogger", "Version")
---@debug@
-CLL.version = "DEBUG"
---@end-debug@
-CLL.obj = ContainerLootLogger
-
--- Initialise modules
-CLL.DB = CLL.DB or {}
-CLL.Debug = CLL.Debug or {}
-CLL.Output = CLL.Output or {}
-CLL.SlashCmds = CLL.SlashCmds or {}
-CLL.Tracking = CLL.Tracking or {}
-CLL.Statistics = CLL.Statistics or {}
-
-
 -- Upvalues
-local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger")
+local L = CLL.L
 local ChatMsg = CLL.Output.Print
 
 
