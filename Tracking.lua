@@ -12,3 +12,34 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise Tracking environment
+Tracking = {}
+Tracking.results = {}
+
+
+-- Start tracking for item and currency updates
+function Tracking:Start()
+
+end
+
+-- Stop tracking and store the results
+function Tracking:Stop()
+
+end
+
+-- Return the results of the latest tracking process
+function Tracking:GetResults()
+
+	return Tracking.results
+
+end
+
+
+-- Add module to shared environment
+CLL.Tracking = Tracking
