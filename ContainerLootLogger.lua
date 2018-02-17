@@ -26,6 +26,11 @@ local ChatMsg = CLL.Output.Print
 --- Called on ADDON_LOADED
 function ContainerLootLogger:OnInitialize()
 	
+	
+	-- Register slash commands
+	self:RegisterChatCommand("cll", CLL.SlashCmds.InputHandler)
+	self:RegisterChatCommand("containerlootlogger", CLL.SlashCmds.InputHandler)
+
 end
 
 --- Called on PLAYER_LOGIN or ADDON_LOADED (if addon is loaded-on-demand)

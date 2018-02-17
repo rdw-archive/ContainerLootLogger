@@ -12,3 +12,51 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise environment
+SlashCmds = {}
+
+
+-- Upvalues
+local L = CLL.L
+local ChatMsg = CLL.Output.Print
+local type = type
+
+
+-- List of supported slash commands
+local validCommands = {
+	
+	["help"] = function()
+		ChatMsg(L["List of valid slash commands:"])
+		ChatMsg("--- TODO ---")
+	end,
+	
+}
+
+-- Print a formatted message
+function SlashCmds.InputHandler(input)
+
+	-- Parse input (via AceConsole)
+	local command = ContainerLootLogger:GetArgs(input)
+	local handlerFunction = validCommands[command]
+	
+	if handlerFunction ~= nil and type(handlerFunction) == "function" and command ~= "help" then -- Is a valid slash command -> execute it
+	
+
+	
+	else -- Display help command
+	
+		validCommands["help"]()
+	
+	end
+	
+end
+
+
+-- Add module to shared environment
+CLL.SlashCmds = SlashCmds
