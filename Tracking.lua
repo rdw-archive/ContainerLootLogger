@@ -154,7 +154,7 @@ function Tracking.Stop()
 	local clientLocale = GetLocale()
 	local fqcn = CLL.GetFQCN()
 	
-	DebugMsg("Saving results to DB... containerType = " .. containerType .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
+	DebugMsg(MODULE, "Saving results to DB... containerType = " .. containerType .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
 	for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
 		DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
 		CLL.DB.AddEntry(v)
