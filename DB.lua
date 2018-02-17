@@ -71,8 +71,8 @@ function DB.ValidateEntry(entry)
 	local template = {
 		amount = "number",
 		type = "string",
-		locale = "string",
-		count = "number",
+		--locale = "string", -- Not needed, as it will be added by DB.AddEntry automatically if omitted
+		--count = "number", -- Will also be increased or initialised with 1 automatically
 	}
 	
 	for k, v in pairs(template) do -- Compare entry with the template and make sure the fields exist
