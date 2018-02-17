@@ -36,6 +36,9 @@ local validCommands = {
 		ChatMsg("--- TODO ---")
 	end,
 	
+	["start"] = CLL.Tracking.Start,
+	["stop"] = CLL.Tracking.Stop,
+	
 }
 
 -- Print a formatted message
@@ -45,9 +48,10 @@ function SlashCmds.InputHandler(input)
 	local command = ContainerLootLogger:GetArgs(input)
 	local handlerFunction = validCommands[command]
 	
-	if handlerFunction ~= nil and type(handlerFunction) == "function" and command ~= "help" then -- Is a valid slash command -> execute it
+	if handlerFunction ~= nil and type(handlerFunction) == "function" then -- Is a valid slash command -> execute it
 	
 
+		handlerFunction()
 	
 	else -- Display help command
 	
