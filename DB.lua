@@ -72,7 +72,7 @@ function DB.ValidateEntry(entry)
 		amount = "number",
 		type = "string",
 		--locale = "string", -- Not needed, as it will be added by DB.AddEntry automatically if omitted
-		--count = "number", -- Will also be increased or initialised with 1 automatically
+		count = "number", -- Will also be increased or initialised with 1 automatically
 	}
 	
 	for k, v in pairs(template) do -- Compare entry with the template and make sure the fields exist
@@ -103,12 +103,18 @@ function DB.AddEntry(key, entry, container, fqcn)
 	-- Update existing entry or create anew with default values to add the given loot info
 	DebugMsg(MODULE, "Adding entry for fqcn = " .. tostring(fqcn))
 	ContainerLootLoggerDB[fqcn][container] = ContainerLootLoggerDB[fqcn][container] or {} -- Init table if this container hasn't been added before
+	--ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened or 0
 	ContainerLootLoggerDB[fqcn][container][key] = ContainerLootLoggerDB[fqcn][container][key] or {}
+	ContainerLootLoggerDB[fqcn][container][key].count = ContainerLootLoggerDB[fqcn][container][key].count or 0
 	
-	ContainerLootLoggerDB[fqcn][container][key].count = ContainerLootLoggerDB[fqcn][container][key].count and (ContainerLootLoggerDB[fqcn][container][key].count + 1) or 1
+	DebugMsg(MODULE, "Count was " .. ContainerLootLoggerDB[fqcn][container][key].count .. ", is now " .. (ContainerLootLoggerDB[fqcn][container][key].count and (ContainerLootLoggerDB[fqcn][container][key].count + entry.count) or entry.count))	
+	ContainerLootLoggerDB[fqcn][container][key].count = ContainerLootLoggerDB[fqcn][container][key].count and (ContainerLootLoggerDB[fqcn][container][key].count + entry.count) or entry.count
+	--ContainerLootLoggerDB[fqcn][container][key].count = (ContainerLootLoggerDB[fqcn][container][key].count + 1)
 	ContainerLootLoggerDB[fqcn][container][key].amount = ContainerLootLoggerDB[fqcn][container][key].amount and (ContainerLootLoggerDB[fqcn][container][key].amount + entry.amount) or entry.amount
 	ContainerLootLoggerDB[fqcn][container][key].type = ContainerLootLoggerDB[fqcn][container][key].type or entry.type -- Types shouldn't be able to change, no need to check this
 	ContainerLootLoggerDB[fqcn][container][key].locale = ContainerLootLoggerDB[fqcn][container][key].locale or GetLocale() -- ditto
+	
+	--ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened + numOpenings
 	
 end
 

@@ -84,13 +84,14 @@ local function ParseChatMsg(str)
 		
 		-- Finally, increase the amount
 		amount = amount or 0 -- Just to make sure
+		entry.count = entry.count + 1
 		entry.amount = entry.amount + tonumber(amount)
 	
 	else -- Create a new entry (no validation is necessary)
-		results[link] = { id = id, type = type, amount = amount }
+		results[link] = { id = id, type = type, amount = amount, count = 1 }
 	end
 
-	DebugMsg(MODULE, "Updated entry for type = " .. tostring(type) .. ", id = " .. tostring(id) .. ", with amount = " .. tostring(amount))
+	DebugMsg(MODULE, "Updated entry for type = " .. tostring(type) .. ", id = " .. tostring(id) .. ", with amount = " .. tostring(amount) .. ", count = " .. tostring(entry and entry.count or 1))
 	-- Store the updated info in the shared table
 	CLL.Tracking.results = results
  
