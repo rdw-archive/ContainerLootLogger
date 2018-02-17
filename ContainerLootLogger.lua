@@ -21,6 +21,9 @@ if not CLL then return end
 -- Initialise shared resources
 ContainerLootLogger = LibStub("AceAddon-3.0"):NewAddon("ContainerLootLogger", "AceConsole-3.0", "AceEvent-3.0")
 CLL.version = GetAddOnMetadata("ContainerLootLogger", "Version")
+--@debug@
+CLL.version = "DEBUG"
+--@end-debug@
 CLL.obj = ContainerLootLogger
 
 -- Initialise modules
