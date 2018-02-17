@@ -77,7 +77,7 @@ function DB.ValidateEntry(entry)
 	
 	for k, v in pairs(template) do -- Compare entry with the template and make sure the fields exist
 		if not entry[k] or type(entry[k]) ~= v then -- This part of the template doesn't exist or is invalid -> reject entry
-			DebugMsg(MODULE, "Failed to validate entry " .. tostring(entry[k]) .. " for key '" .. k .. "' (should be " .. v .. ")")
+			DebugMsg(MODULE, "Failed to validate entry " .. tostring(entry[k]) .. " for key '" .. k .. "' (should be " .. v .. ", but is " .. type(entry[k]) .. ")")
 			return false
 		end
 	end
