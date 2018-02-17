@@ -149,6 +149,17 @@ function Tracking.Stop()
 	-- Print results of the latest scan
 	Tracking.PrintResults()
 	
+	-- Update DB with current results
+	local containerType = "UNKNOWN" -- TODO: Other types aren't supported yet
+	local clientLocale = GetLocale()
+	local fqcn = CLL.GetFQCN()
+	
+	DebugMsg("Saving results to DB... containerType = " .. containerType .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
+	for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
+		DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
+		CLL.DB.AddEntry(v)
+	end
+	
 end
 
 -- Return the results of the latest tracking process (only if no scan is currently active)

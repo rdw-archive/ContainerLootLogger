@@ -89,8 +89,9 @@ end
 -- Adds a loot entry for the given fqcn (or the current player if none was given)
 -- @param entry
 -- @param fqcn
-function DB.AddEntry(entry, fqcn)
+function DB.AddEntry(entry, containerType, fqcn)
 
+	containerType = containerType or "UNKNOWN"
 	fqcn = fqcn or GetFQCN()
 
 	local isValid = DB.ValidateEntry(entry)
@@ -99,8 +100,14 @@ function DB.AddEntry(entry, fqcn)
 		return
 	end
 	
+	-- Update existing entry or create anew with default values to add the given loot info
 	DebugMsg("Adding entry for fqcn = " .. tostring(fqcn))
-
+	ContainerLootLoggerDB[fqcn][containerType] = ContainerLootLoggerDB[fqcn][containerType] or {} -- Init table if this container hasn't been added before
+	ContainerLootLoggerDB[fqcn][containerType].count = ContainerLootLoggerDB[fqcn][containerType].count and (ContainerLootLoggerDB[fqcn][containerType].count + 1) or 1
+	ContainerLootLoggerDB[fqcn][containerType].amount = ContainerLootLoggerDB[fqcn][containerType].amount and (ContainerLootLoggerDB[fqcn][containerType].amount + entry.amount) or entry.amount
+	ContainerLootLoggerDB[fqcn][containerType].type = ContainerLootLoggerDB[fqcn][containerType].type or entry.type -- Types shouldn't be able to change, no need to check this
+	ContainerLootLoggerDB[fqcn][containerType].locale = ContainerLootLoggerDB[fqcn][containerType].locale or GetLocale() -- ditto
+	
 end
 
 -- Add module to shared environment
