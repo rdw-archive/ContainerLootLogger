@@ -46,7 +46,7 @@ end
 -- Return the results of the latest tracking process
 function Tracking:GetResults()
 
-	return Tracking.results
+	return CLL.Tracking.results
 
 end
 
