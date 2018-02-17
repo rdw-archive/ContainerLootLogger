@@ -12,3 +12,105 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------
+
+
+local addonName, CLL = ...
+if not CLL then return end
+
+
+-- Initialise environment
+local DB = {}
+
+-- Locals and constants
+local MODULE = "DB"
+local DB_VERSION = 1
+
+-- DB Versioning
+local versions = {
+	[1] = { changelog = "Initial version", changes = {} }
+}
+
+-- Upvalues
+local type = type
+local format = format
+local tonumber = tonumber
+local tostring = tostring
+local pairs = pairs
+local UnitName = UnitName
+local GetRealmName = GetRealmName
+local DebugMsg = CLL.Debug.Print
+
+
+-- Returns name - realm for a given character (or the current player if none were given)
+local function GetFQCN(characterName, realm)
+	
+	characterName = (type(characterName) == "string" and characterName) or UnitName("player")
+	realm = (type(realm) == "string" and realm) or GetRealmName()
+	local key = format("%s - %s", characterName, realm)	 
+
+	return key
+	
+end
+
+-- Print a formatted message
+function DB.Init()
+
+	-- Create DB tables if necessary
+	ContainerLootLoggerDB = ContainerLootLoggerDB or {}
+	
+	local fqcn = GetFQCN()
+	ContainerLootLoggerDB[fqcn] = ContainerLootLoggerDB[fqcn] or {}
+	
+	-- Update to current version (if outdated)
+	local currentVersion = ContainerLootLoggerDB["DatabaseVersion"]
+	DebugMsg(MODULE, "Initialising DB with currentVersion = " .. tostring(currentVersion))
+	
+	if not currentVersion or type(currentVersion) ~= "number" or (tonumber(currentVersion) < DB_VERSION) then -- DB needs upgrade to newer version
+		DebugMsg(MODULE, "DatabaseVersion was found to be outdated (is " .. tostring(currentVersion) .. ", needs upgrading to " .. DB_VERSION .. ")")
+		-- TODO: Apply changes where necessary
+		ContainerLootLoggerDB["DatabaseVersion"] = DB_VERSION
+	end	
+	
+end
+
+-- Validates a given entry (must contain container name and loot info)
+function DB.ValidateEntry(entry)
+	-- A valid entry looks like this (for the current DB_VERSION; may be subject to change):
+	-- <link> = { amount = <total amount>, type = <currency, item, etc.>, locale = <client locale>, count = <no. of opened containers> }
+	local template = {
+		amount = "number",
+		type = "string",
+		locale = "string",
+		count = "number",
+	}
+	
+	for k, v in pairs(template) do -- Compare entry with the template and make sure the fields exist
+		if not entry[k] or type(entry[k]) ~= v then -- This part of the template doesn't exist or is invalid -> reject entry
+			DebugMsg(MODULE, "Failed to validate entry " .. tostring(entry[k]) .. " for key '" .. k .. "' (should be " .. v .. ")")
+			return false
+		end
+	end
+	
+	return true
+	
+end
+
+-- Adds a loot entry for the given fqcn (or the current player if none was given)
+-- @param entry
+-- @param fqcn
+function DB.AddEntry(entry, fqcn)
+
+	fqcn = fqcn or GetFQCN()
+
+	local isValid = DB.ValidateEntry(entry)
+	if not isValid then -- Can't add this to the DB
+		DebugMsg(MODULE, "Failed to add entry to the DB because it was invalid")
+		return
+	end
+	
+	DebugMsg("Adding entry for fqcn = " .. tostring(fqcn))
+
+end
+
+-- Add module to shared environment
+CLL.DB = DB
