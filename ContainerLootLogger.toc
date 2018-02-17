@@ -8,15 +8,20 @@
 
 Locales\Locales.xml
 
+## Initialisation - must be the first item
 Init.lua
 
+## Modules - order is arbitrary
 DB.lua
 Debug.lua
 Output.lua
-SlashCmds.lua
 Tracking.lua
 Statistics.lua
 
+## User interaction - requires modules to be loaded
+SlashCmds.lua
+
+## Addon loader - should be the last item
 ContainerLootLogger.lua
 
 #@no-lib-strip@
