@@ -37,17 +37,17 @@ local L = LibStub("AceLocale-3.0"):GetLocale("ContainerLootLogger")
 
 
 --- Called on ADDON_LOADED
-function Addon:OnInitialize()
+function ContainerLootLogger:OnInitialize()
 	
 end
 
 --- Called on PLAYER_LOGIN or ADDON_LOADED (if addon is loaded-on-demand)
-function Addon:OnEnable()
+function ContainerLootLogger:OnEnable()
 	
 end
 
 --- Called when addon is unloaded or disabled manually
-function Addon:OnDisable()
+function ContainerLootLogger:OnDisable()
 
 end
 
