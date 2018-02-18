@@ -39,6 +39,8 @@ local validCommands = {
 	["start"] = CLL.Tracking.Start,
 	["stop"] = CLL.Tracking.Stop,
 	
+	["gold"] = CLL.Statistics.PrintGold,
+	
 }
 
 -- Print a formatted message

@@ -17,3 +17,4 @@ L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :
 L["List of valid slash commands:"] = true
 L["You receive item: "] = true
 L["You receive currency: "] = true
+L["You receive (%d+) Gold"] = true

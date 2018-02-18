@@ -44,6 +44,9 @@ function ContainerLootLogger:OnEnable()
 	ChatMsg(format(L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"], "CLL", CLL.version, clientVersion))
 	
 	-- TotalAP.EventHandlers.RegisterAllEvents()
+	ContainerLootLogger:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", CLL.Detection.OnUnitSpellcastSucceeded)
+	ContainerLootLogger:RegisterEvent("GARRISON_MISSION_NPC_OPENED", CLL.Detection.OnGarrisonMissionNPCOpened)
+	ContainerLootLogger:RegisterEvent("GARRISON_MISSION_NPC_CLOSED", CLL.Detection.OnGarrisonMissionNPCClosed)
 	
 end
 

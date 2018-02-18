@@ -31,11 +31,14 @@ local pairs = pairs
 local L = CLL.L
 local wipe = wipe
 local GetLocale = GetLocale
+local GetCoinTextureString = GetCoinTextureString
+local GetMoney = GetMoney
 
 -- Locals and constants
 local MODULE = "Tracking"
 local LOOT_STRING = L["You receive item: "]
 local CURRENCY_STRING = L["You receive currency: "] 
+local currentGoldValue = 0
 
 -- Parses a chat message and extracts the obtained item or currency info (if available)
 -- @param msg The captured chat message
@@ -116,7 +119,13 @@ end
 -- Start tracking for item and currency updates
 function Tracking.Start()
 
-	DebugMsg(MODULE, "Tracking started. Registering for events...")
+	if CLL.Tracking.isActive then -- Already tracking
+		DebugMsg(MODULE, "Tracking is already in progress!")
+		return
+	end
+
+	currentGoldValue = GetMoney()
+	DebugMsg(MODULE, "Tracking started with " .. GetCoinTextureString(currentGoldValue) .. ". Registering for events...")
 	
 	-- Re-start the scan and scrub any previous results
 	CLL.Tracking.isActive = true
@@ -136,11 +145,36 @@ function Tracking.Start()
 	
 end
 
--- Stop tracking and store the results
-function Tracking.Stop()
+-- Helper function to make up for the # operator's shortcomings in hash tables
+local function count(t)
 	
-	DebugMsg(MODULE, "Tracking stopped. Unregistering events...")
+	local c = 0
+	
+	for k,v in pairs(t) do
+		c = c + 1
+	end
+	
+	return c
+	
+end
 
+-- Stop tracking and store the results
+function Tracking.Stop(container)
+	
+	local oldGoldValue = currentGoldValue
+	currentGoldValue = GetMoney()
+	DebugMsg(MODULE, "Tracking stopped with " .. GetCoinTextureString(currentGoldValue) .. "Unregistering events...")
+	local goldChange = currentGoldValue - oldGoldValue
+	if goldChange > 0 then -- Update DB entry (TODO: Parse chat is still necessary to get all the rewards?)
+		ChatMsg("Gold change detected: " .. GetCoinTextureString(goldChange))
+		local goldEntry = { amount = goldChange, type = "gold", count = 1 }
+		CLL.DB.AddEntry("GOLD", goldEntry, container)
+	else
+		if goldChange < 0 then
+			DebugMsg(MODULE, "Negative gold change while tracking is in progress - you're doing it wrong!")
+		end
+	end
+	
 	CLL.Tracking.isActive = false
 	
 	-- Unregister all previously registered events
@@ -148,18 +182,29 @@ function Tracking.Stop()
 	ContainerLootLogger:UnregisterEvent("CHAT_MSG_CURRENCY")
 	
 	-- Print results of the latest scan
-	Tracking.PrintResults()
+	--Tracking.PrintResults() -- TODO: Manually only, to avoid spam
 	
 	-- Update DB with current results
-	local container = "UNKNOWN_CONTAINER" -- TODO: Actual opening detection is not added yet, so this is using the fallback mechanism for everything
+	container = container or "UNKNOWN_CONTAINER" -- TODO: Actual opening detection is not added yet, so this is using the fallback mechanism for everything
 	local clientLocale = GetLocale()
 	local fqcn = CLL.GetFQCN()
 	
-	DebugMsg(MODULE, "Saving results to DB... container = " .. container .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
-	for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
-		DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
-		CLL.DB.AddEntry(k, v)
-	end
+	-- Increment container counter if there are any results
+	if count(CLL.Tracking.results) > 0 then	
+		
+		DebugMsg(MODULE, "Saving results to DB... container = " .. container .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
+		
+		for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
+			DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
+			CLL.DB.AddEntry(k, v, container)
+		end
+	
+		CLL.DB.AddOpening(container) -- TODO. This is inaccurate, count in the Detection module and simply add the total count here...
+		return
+		
+	end	
+
+	DebugMsg(MODULE, "Results are empty; nothing will be saved")
 	
 end
 

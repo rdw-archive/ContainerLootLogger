@@ -9,13 +9,6 @@ local currentItem = "<none>";
 local lastUsedSpell = "<none>";
 local lastUsedItemSpell = "<none>";
 
--- Initialise savedVars DB
-if not ContainerLootLoggerDB then ContainerLootLoggerDB = {} end;
-local db = ContainerLootLoggerDB;
-
--- TODO: SlashCommand to toggle this
-local debugMode = false;
-local verbose = true;
 
 
 -- TODO: Library for these utility functions and others to come
@@ -24,17 +17,6 @@ function GetItemIDFromLink(itemLink)
 	return itemID or 0;
 end
 
-function Debug(msg)
-	if debugMode then
-		print(format("|c000072CA" .. "CLL-Debug: " .. "|c00FFFFFF%s", msg));
-	end
-end
-
-local function ChatMsg(msg)
-	if verbose then
-		print(format("|c00CC5500" .. "ContainerLootLogger: " .. "|c00E6CC80%s", msg));
-	end
-end
 
 -- TODO: THis doesn't belong here
 -- Print contents of `tbl`, with indentation.
@@ -136,34 +118,6 @@ local function SaveToDB(typeString, itemOrCurrencyID, amount)
 	Debug(format("Old amount was %d, new amount is %d", db[charRealm][sourceItemID][result], tempAmount));
 	db[charRealm][sourceItemID][result] = tempAmount;
 end
--- All spells that can be tracked by the addon (and that aren't detected via regular loot events)
--- Format: spell ID -> isEnabled (TODO: settings, slashcmd etc)
-local openContainerSpells = { 
-	--[13262] = true, -- Disenchant
-	[31252] = true, -- Prospecting
-	[51005] = true, -- Milling 
-	[190385] = true, -- Mass Mill: Nagrand Arrowbloom
-	[190384] = true, -- Mass Mill: Starflower
-	[190383] = true, -- Mass Mill: Gorgrond Flytrap
-	[190386] = true, -- Mass Mill: Talador Orchid
-	[190381] = true, -- Mass Mill: Frostweed
-	[190382] = true, -- Mass Mill: Fireweed
-	[209662] = true, -- Mass Mill: Starlight Rose
-	[209661] = true, -- Mass Mill: Fjarnskaggl
-	[209660] = true, -- Mass Mill: Foxflowers
-	[209659] = true, -- Mass Mill: Dreamleaf
-	[210116] = true, -- Mass Mill: Yseralline Seeds
-	[209664] = true, -- Mass Mill: Felwort
-	[209658] = true, -- Mass Mill: Aethril
-	[114120] = true, -- Salvage = Big Crate of Salvage (no longer obtainable)
-	[168178] = true, -- Bag of Salvaged Goods (no longer obtainable)
-	[168179] = true, -- Salvage = Crate of Salvage (no longer obtainable?)
-	[220971] = 139593, -- Sack of Salvaged Goods
-	[220972] = 139594, -- Salvage = Salvage Crate
-	[220973] = 140590, -- Salvage = Large Crate of Salvage
-	[175767] = 118697, -- Big Bag of Pet Supplies (WOD Menagerie)
-	[127751] = 187534, -- Fel-touched Pet Supplies (Tanaan Jungle) TODO: Doesn't detect the loot events??
-}
 
 -- TODO: reset db, reset entries, show output (in frame, ideally)
 local function SlashFunction(msg)
