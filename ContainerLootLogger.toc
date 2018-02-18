@@ -16,6 +16,7 @@ Debug.lua
 Output.lua
 
 DB.lua
+Detection.lua
 Tracking.lua
 Statistics.lua
 

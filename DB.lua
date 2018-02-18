@@ -86,6 +86,21 @@ function DB.ValidateEntry(entry)
 	
 end
 
+
+-- Add one instance of opened container
+function DB.AddOpening(container, fqcn)
+
+	fqcn = fqcn or GetFQCN()
+	
+	container = container or "UNKNOWN_SOURCE" -- TODO
+	DebugMsg(MODULE, "Adding opening for fqcn = " .. tostring(fqcn) .. ", container = " .. tostring(container))
+	ContainerLootLoggerDB[fqcn][container] = ContainerLootLoggerDB[fqcn][container] or {} -- Init table if this container hasn't been added before
+	
+
+	ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened and (ContainerLootLoggerDB[fqcn][container].numContainersOpened + 1 ) or 1 -- TODO: Wrong for missions, should consider each mission instead of the "table opening"?
+	
+end
+
 -- Adds a loot entry for the given fqcn (or the current player if none was given)
 -- @param entry
 -- @param fqcn
