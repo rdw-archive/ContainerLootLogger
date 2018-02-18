@@ -151,15 +151,26 @@ function Tracking.Stop()
 	Tracking.PrintResults()
 	
 	-- Update DB with current results
-	local container = "UNKNOWN_CONTAINER" -- TODO: Actual opening detection is not added yet, so this is using the fallback mechanism for everything
+	container = container or "UNKNOWN_CONTAINER" -- TODO: Actual opening detection is not added yet, so this is using the fallback mechanism for everything
 	local clientLocale = GetLocale()
 	local fqcn = CLL.GetFQCN()
 	
-	DebugMsg(MODULE, "Saving results to DB... container = " .. container .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
-	for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
-		DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
-		CLL.DB.AddEntry(k, v)
-	end
+	-- Increment container counter if there are any results
+	if count(CLL.Tracking.results) > 0 then	
+		
+		DebugMsg(MODULE, "Saving results to DB... container = " .. container .. ", clientLocale = " .. clientLocale .. ", fqcn = " .. fqcn)
+		
+		for k, v in pairs(CLL.Tracking.results) do -- Add individual loot entry to the DB and increase statistics according to its amount/count
+			DebugMsg(MODULE, "Attempting to add entry for key = " .. k)
+			CLL.DB.AddEntry(k, v, container)
+		end
+	
+		CLL.DB.AddOpening(container) -- TODO. This is inaccurate, count in the Detection module and simply add the total count here...
+		return
+		
+	end	
+
+	DebugMsg(MODULE, "Results are empty; nothing will be saved")
 	
 end
 

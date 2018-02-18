@@ -116,7 +116,7 @@ function DB.AddEntry(key, entry, container, fqcn)
 	end
 	
 	-- Update existing entry or create anew with default values to add the given loot info
-	DebugMsg(MODULE, "Adding entry for fqcn = " .. tostring(fqcn))
+	DebugMsg(MODULE, "Adding entry for fqcn = " .. tostring(fqcn) .. ", container = " .. tostring(container))
 	ContainerLootLoggerDB[fqcn][container] = ContainerLootLoggerDB[fqcn][container] or {} -- Init table if this container hasn't been added before
 	--ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened or 0
 	ContainerLootLoggerDB[fqcn][container][key] = ContainerLootLoggerDB[fqcn][container][key] or {}
