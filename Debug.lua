@@ -30,6 +30,11 @@ local format = format
 -- Print a formatted debug message
 function Debug.Print(MODULE, msg)
 
+	if not MODULE and msg then
+		msg = msg or MODULE or "UNKNOWN_MESSAGE"
+		MODULE = "UNKNOWN_MODULE"
+	end
+	
 	print(format("|c000072CA" .. "%s-|c0033A5FD" .. MODULE .. ": " .. "|c00E6CC80%s", "CLL", msg))
 	
 end
