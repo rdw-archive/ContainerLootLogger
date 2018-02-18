@@ -178,7 +178,7 @@ function Tracking.Stop(container)
 	ContainerLootLogger:UnregisterEvent("CHAT_MSG_CURRENCY")
 	
 	-- Print results of the latest scan
-	Tracking.PrintResults()
+	--Tracking.PrintResults() -- TODO: Manually only, to avoid spam
 	
 	-- Update DB with current results
 	container = container or "UNKNOWN_CONTAINER" -- TODO: Actual opening detection is not added yet, so this is using the fallback mechanism for everything
