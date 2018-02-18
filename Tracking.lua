@@ -119,7 +119,11 @@ end
 -- Start tracking for item and currency updates
 function Tracking.Start()
 
-	DebugMsg(MODULE, "Tracking started. Registering for events...")
+	if CLL.Tracking.isActive then -- Already tracking
+		DebugMsg(MODULE, "Tracking is already in progress!")
+		return
+	end
+
 	currentGoldValue = GetMoney()
 	DebugMsg(MODULE, "Tracking started with " .. GetCoinTextureString(currentGoldValue) .. ". Registering for events...")
 	
