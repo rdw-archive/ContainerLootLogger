@@ -86,7 +86,7 @@ function Detection.OnUnitSpellcastSucceeded(...)
 		-- Start tracking and give it a bit to detect loot (todo: may bug out if lag is an issue?)
 		DebugMsg(MODULE, "Starting Tracking process to detect loot...")
 		CLL.Tracking.Start() -- TODO: Set container properly
-		local secs = 2
+		local secs = 1 -- TODO: If this delay is longer than the shortest cast time (e.g., 1.5sec for Salvage), then a new cast can finish while tracking is still in progress/locked, which means the 2nd cast will either mess up the first one's results, or go (partially) undetected
 		C_Timer.After(secs, function(self)
 			DebugMsg(MODULE, "Stopped Tracking process after " .. secs .. " seconds") -- TODO. Settings to account for latency?
 			CLL.Tracking.Stop(container)
