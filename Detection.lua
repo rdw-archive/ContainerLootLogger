@@ -96,6 +96,51 @@ function Detection.OnUnitSpellcastSucceeded(...)
 	
 end
 
+local followerTypes = { -- Simple LUT to match Blizzard's follower types to loot sources in the DB (so they don't show as UNKNOWN_CONTAINER)
+
+	[LE_FOLLOWER_TYPE_GARRISON_6_0] = "WOD_GARRISON",
+	[LE_FOLLOWER_TYPE_GARRISON_7_0] = "LEGION_ORDER_HALL",
+	
+}
+
+local container = "NOT_INITIALISED"
+local isOpening = false
+
+-- Called when a mission table is opened -> Start tracking process to detect loot
+function Detection.OnGarrisonMissionNPCOpened(...)
+
+	local _, followerType = ...
+	container = followerTypes[followerType] or  "UNKNOWN_FOLLOWER_TYPE"
+	DebugMsg(MODULE, "OnGarrisonMissionNPCOpened with followerType = " .. followerType .. ", container = " .. container)
+	
+	if isOpening then
+		DebugMsg(MODULE, "Mission table is already open!")
+		return
+	end
+	isOpening = true
+	
+	DebugMsg(MODULE, "Starting Tracking process to detect loot...")
+	CLL.Tracking.Start()
+	
+end
+
+-- Called when a mission table is closed -> Stop tracking process and save results to DB
+function Detection.OnGarrisonMissionNPCClosed(...)
+
+	DebugMsg(MODULE, "OnGarrisonMissionNPCClosed with container = " .. container)
+	
+	if not isOpening then
+		DebugMsg(MODULE, "Mission table is not open!")
+		return
+	end
+	
+	DebugMsg(MODULE, "Stopped tracking process after mission table was closed...")
+	CLL.Tracking.Stop(container)
+	
+	isOpening = false
+	
+end
+
 
 -- Add module to shared environment
 CLL.Detection = Detection

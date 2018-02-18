@@ -45,6 +45,8 @@ function ContainerLootLogger:OnEnable()
 	
 	-- TotalAP.EventHandlers.RegisterAllEvents()
 	ContainerLootLogger:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", CLL.Detection.OnUnitSpellcastSucceeded)
+	ContainerLootLogger:RegisterEvent("GARRISON_MISSION_NPC_OPENED", CLL.Detection.OnGarrisonMissionNPCOpened)
+	ContainerLootLogger:RegisterEvent("GARRISON_MISSION_NPC_CLOSED", CLL.Detection.OnGarrisonMissionNPCClosed)
 	
 end
 
