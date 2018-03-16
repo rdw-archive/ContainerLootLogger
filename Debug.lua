@@ -30,6 +30,8 @@ local format = format
 -- Print a formatted debug message
 function Debug.Print(MODULE, msg)
 
+	if not CLL.SettingsDB.profile.settings.core.debugMode then return end
+
 	if not MODULE and msg then
 		msg = msg or MODULE or "UNKNOWN_MESSAGE"
 		MODULE = "UNKNOWN_MODULE"

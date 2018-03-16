@@ -23,8 +23,10 @@ local Settings = {}
 local MODULE = "Settings"
 
 local defaultSettings = {
+	
 	core = { -- General settings that affect all modules
 		isEnabled = true, -- Is logging enabled?
+		debugMode = false, -- Will debug info be shown?
 	},
 	
 }

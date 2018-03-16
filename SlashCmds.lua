@@ -53,9 +53,23 @@ function SlashCmds.SlashOn()
 	
 end
 
+-- Toggle debug mode
+function SlashCmds.SlashDebug()
+	
+	if not CLL.SettingsDB.profile.settings.core.debugMode then -- Turn it on
+		CLL.SettingsDB.profile.settings.core.debugMode = true
+		ChatMsg("Debug Mode is now ON")
+	else -- Turn it off
+		CLL.SettingsDB.profile.settings.core.debugMode = false
+		ChatMsg("Debug Mode is now OFF")
+	end
+	
+end
+
 local helpText = {
 	["(on|off)"] = "Enable or disable the addon's logging functionality (e.g., to stop logging temporarily)",
 	["(checkout|co)"] = "Print the Order Hall summary",
+	["debug"] = "Show additional (mostly technical) info that can be used to troubleshoot problems",
 }
 
 -- Display the help text for each slash command
@@ -84,6 +98,8 @@ local validCommands = {
 	["checkout"] = CLL.DB.Checkout,
 	["co"] = CLL.DB.Checkout, -- Alias
 	["reset"] = CLL.DB.Reset,
+	
+	["debug"] = SlashCmds.SlashDebug,
 	
 }
 
