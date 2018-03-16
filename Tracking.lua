@@ -30,6 +30,7 @@ local tostring = tostring
 local pairs = pairs
 local select = select
 local type = type
+local math_abs = math.abs
 local L = CLL.L
 local wipe = wipe
 local GetLocale = GetLocale
