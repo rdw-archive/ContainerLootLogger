@@ -27,6 +27,31 @@ local L = CLL.L
 local ChatMsg = CLL.Output.Print
 local type = type
 
+-- Configuration slash commands
+-- Manually disables logging
+function SlashCmds.SlashOff()
+	
+	if CLL.SettingsDB.profile.settings.core.isEnabled then -- Turn it off
+		CLL.SettingsDB.profile.settings.core.isEnabled = false
+		ChatMsg("Logging is now disabled")
+	else
+		ChatMsg("Logging is already disabled")
+	end
+	
+end
+
+-- Manually enables logging
+function SlashCmds.SlashOn()
+	
+	if not CLL.SettingsDB.profile.settings.core.isEnabled then -- Turn it on
+		CLL.SettingsDB.profile.settings.core.isEnabled = true
+		ChatMsg("Logging is now enabled")
+	else
+		ChatMsg("Logging is already enabled")
+	end
+	
+end
+
 
 -- List of supported slash commands
 local validCommands = {
@@ -40,6 +65,8 @@ local validCommands = {
 	["stop"] = CLL.Tracking.Stop,
 	
 	["gold"] = CLL.Statistics.PrintGold,
+	["on"] = SlashCmds.SlashOn,
+	["off"] = SlashCmds.SlashOff,
 	["checkout"] = CLL.DB.Checkout,
 	["co"] = CLL.DB.Checkout, -- Alias
 	["reset"] = CLL.DB.Reset,

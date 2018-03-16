@@ -21,6 +21,14 @@ local Settings = {}
 
 -- Locals and constants
 local MODULE = "Settings"
+
+local defaultSettings = {
+	core = { -- General settings that affect all modules
+		isEnabled = true, -- Is logging enabled?
+	},
+	
+}
+
 local settings = {
 	global = {}, -- TODO: DB would belong here, but I'm not a fan of having AceDB blow up any existing metatables for this 
 
