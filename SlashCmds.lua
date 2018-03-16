@@ -40,6 +40,8 @@ local validCommands = {
 	["stop"] = CLL.Tracking.Stop,
 	
 	["gold"] = CLL.Statistics.PrintGold,
+	["checkout"] = CLL.DB.Checkout,
+	["co"] = CLL.DB.Checkout, -- Alias
 	
 }
 

@@ -39,6 +39,7 @@ local pairs = pairs
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local GetLocale = GetLocale
+local ChatMsg = CLL.Output.Print
 local DebugMsg = CLL.Debug.Print
 local GetFQCN = CLL.GetFQCN
 
@@ -131,6 +132,72 @@ function DB.AddEntry(key, entry, container, fqcn)
 	
 	--ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened + numOpenings
 	
+end
+
+-- TODO: Format numbers according to locale (use Blizzard functions)
+
+
+-- TODO: Ordering
+local ABC_DESC, ABC_ASC, GOLD_DESC, GOLD_ASC, OR_DESC, GOLD_ASC, CUSTOM = 1, 2, 3, 4, 5, 6, 7
+
+-- TODO: Settings
+local settings = {
+	showEmptyAll = false, -- Display characters that haven't earned any gold since last reset
+	showEmptyToday = false, -- Display characters that haven't earned any gold ever
+	sortType = ABC_DESC, -- TODO: Possible types = abc, custom ordering, by gold earned, by OR spent?
+	
+}
+
+-- Checkout the current and total gold logged (read-only, so this can be used at will)
+function DB.Checkout()
+
+	-- Print summary of the gold earnings since last reset
+	local showEmpty = settings and settings.showEmptyAll or false -- TODO: all/today
+	local goldSinceLastReset, goldTotalSum = 0, 0
+	DebugMsg(MODULE, "Checking out characters...")	
+	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
+	
+		-- Calculate gold earned since last reset (TODO: Not really "today" as it doesn't save data in the daily format yet)
+		local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] or 0
+		if goldToday > 0 then -- This character has earned gold since last reset -> Always print it
+			goldSinceLastReset = goldSinceLastReset + goldToday			
+			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] or {}
+			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0-- entry["LEGION_ORDER_HALL"]["GOLD"]["amount"]
+			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] or 0) -- entry["LEGION_ORDER_HALL"]["GOLD"]["count"]
+			-- TODO: locale, type can remain unchanged?
+		end
+		
+		-- Calculate gold earned in total
+		local goldAfterNextReset = (type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0) + goldToday -- Add today's gold in the displayed total, without altering the DB entry (this will be done during resets)
+		if (goldToday > 0 or goldAfterNextReset > 0) or showEmpty then -- Display character in the summary
+			
+			-- Format numbers (TODO: thousands separator) for readability
+			local formattedGoldToday = GetCoinTextureString(goldToday)
+			local formattedGoldTotal = GetCoinTextureString(goldAfterNextReset)
+		
+			ChatMsg("-----------------------------------------------------------------------------------------------------------")
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] TODAY: " .. formattedGoldToday .. " - TOTAL: " .. formattedGoldTotal)
+			ChatMsg("Showing data for [" .. tostring(toon) .. "]")
+			ChatMsg("Gold earned (today): " .. formattedGoldToday)
+			ChatMsg("Gold earned (total): " .. formattedGoldTotal)
+			
+		end
+		goldTotalSum = goldTotalSum + goldAfterNextReset - goldToday
+		
+	end
+	
+	-- Format numbers (TODO: thousands separator for large numbers) for readability
+	local formattedGoldSinceLastReset = GetCoinTextureString(goldSinceLastReset)
+	local formattedGoldTotalSum = GetCoinTextureString(goldTotalSum)
+	local formattedGoldAfterNextReset = GetCoinTextureString(goldTotalSum + goldSinceLastReset)
+	
+	-- Print summary
+	ChatMsg("-----------------------------------------------------------------------------------------------------------")
+	DebugMsg(MODULE,"Gold earned - TODAY: " .. formattedGoldSinceLastReset .. " - OLD TOTAL: " .. formattedGoldTotalSum .. " - NEW TOTAL: " .. formattedGoldAfterNextReset)
+	ChatMsg("Gold earned (total): " .. formattedGoldTotalSum)
+	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
+	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
+
 end
 
 -- Add module to shared environment
