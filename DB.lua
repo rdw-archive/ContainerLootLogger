@@ -179,7 +179,7 @@ function DB.GetTotalAmount(container, fqcn)
 --print(1, k, v)		
 			if str_match(k, datePattern) then -- Is a daily log entry
 --print(2)
-				numEntries = numEntries + (v.amount or 0) -- If the daily log exists but is empty, don't count this day
+				numEntries = numEntries + (((v.amount ~= nil) and 1) or 0) -- If the daily log exists but is empty, don't count this day
 				totalAmount = totalAmount + (v.amount or 0)
 			end
 		end
