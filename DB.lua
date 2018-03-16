@@ -156,7 +156,7 @@ local settings = {
 	showEmptyAll = false, -- Display characters that haven't earned any gold since last reset
 	showEmptyToday = false, -- Display characters that haven't earned any gold ever
 	sortType = ABC_DESC, -- TODO: Possible types = abc, custom ordering, by gold earned, by OR spent?
-	
+	showCurrentPlayerOnly = true, -- Only display summary for the logged-in character
 }
 
 -- Checkout the current and total gold logged (read-only, so this can be used at will)
@@ -164,6 +164,9 @@ function DB.Checkout()
 
 	-- Print summary of the gold earnings since last reset
 	local showEmpty = settings and settings.showEmptyAll or false -- TODO: all/today
+	local showCurrentPlayerOnly = settings and settings.showCurrentPlayerOnly or false
+	local player = GetFQCN()
+	
 	local goldSinceLastReset, goldTotalSum = 0, 0
 	DebugMsg(MODULE, "Checking out characters...")	
 	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
@@ -186,11 +189,14 @@ function DB.Checkout()
 			local formattedGoldToday = GetCoinTextureString(goldToday)
 			local formattedGoldTotal = GetCoinTextureString(goldAfterNextReset)
 		
-			ChatMsg("-----------------------------------------------------------------------------------------------------------")
 			DebugMsg(MODULE, "[" .. tostring(toon) .. "] TODAY: " .. formattedGoldToday .. " - TOTAL: " .. formattedGoldTotal)
-			ChatMsg("Showing data for [" .. tostring(toon) .. "]")
-			ChatMsg("Gold earned (today): " .. formattedGoldToday)
-			ChatMsg("Gold earned (total): " .. formattedGoldTotal)
+			
+			if not showCurrentPlayerOnly or (showCurrentPlayerOnly and toon == player) then -- Display data for this toon
+				ChatMsg("-----------------------------------------------------------------------------------------------------------")
+				ChatMsg("Showing data for [" .. tostring(toon) .. "]")
+				ChatMsg("Gold earned (today): " .. formattedGoldToday)
+				ChatMsg("Gold earned (total): " .. formattedGoldTotal)
+			end
 			
 		end
 		goldTotalSum = goldTotalSum + goldAfterNextReset - goldToday
