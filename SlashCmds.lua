@@ -26,6 +26,7 @@ local SlashCmds = {}
 local L = CLL.L
 local ChatMsg = CLL.Output.Print
 local type = type
+local pairs = pairs
 
 -- Configuration slash commands
 -- Manually disables logging
@@ -52,13 +53,26 @@ function SlashCmds.SlashOn()
 	
 end
 
+local helpText = {
+	["(on|off)"] = "Enable or disable the addon's logging functionality (e.g., to stop logging temporarily)",
+	["(checkout|co)"] = "Print the Order Hall summary",
+}
+
+-- Display the help text for each slash command
+local function PrintSlashCmds()
+
+	for command, text in pairs(helpText) do -- Print text if any exists
+		if type(command) == "string" and type(text) == "string" then ChatMsg("/cll " .. command .. " " .. text) end -- TODO: Alias or full slash command?
+	end
+
+end
 
 -- List of supported slash commands
 local validCommands = {
 	
 	["help"] = function()
 		ChatMsg(L["List of valid slash commands:"])
-		ChatMsg("--- TODO ---")
+		PrintSlashCmds()
 	end,
 	
 	["start"] = CLL.Tracking.Start,
