@@ -38,6 +38,7 @@ local tostring = tostring
 local pairs = pairs
 local date = date
 local math_abs = math.abs
+local str_match = string.match
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local GetLocale = GetLocale
@@ -45,6 +46,13 @@ local ChatMsg = CLL.Output.Print
 local DebugMsg = CLL.Debug.Print
 local GetFQCN = CLL.GetFQCN
 
+-- Helper function (TODO: Upvalue)
+local function IsFQCN(str)
+
+	if not str or not str:match(".*%s-%s.*") then return false end
+	return true
+	
+end
 
 -- Initialise DB in SavedVariables
 function DB.Init()
@@ -148,6 +156,40 @@ end
 
 -- TODO: Format numbers according to locale (use Blizzard functions)
 
+-- Sums up the daily entries for a given character and container and returns some statistics
+function DB.GetTotalAmount(container, fqcn)
+
+	-- Parameter validation (well, sort of)
+	if not container then return  end
+	fqcn = fqcn or GetFQCN()
+	
+	-- Sum up all entries
+	local numEntries, totalAmount = 0, 0
+	local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key
+	local datePattern = "%d+-%d+-%d+" -- all other entries are actual words, so it doesn't need to be overly restrictive
+	
+	local entry = ContainerLootLoggerDB[fqcn] -- Check if this toon has an entry that needs to be printed
+	
+	if type(entry) == "table" and IsFQCN(fqcn) then -- is potential character DB
+	
+		local orderHallLog = entry.LEGION_ORDER_HALL or {}
+		local containerLog = orderHallLog[container] or {}
+--print(container, fqcn)
+		for k, v in pairs(containerLog) do -- Check if entry is a daily log
+--print(1, k, v)		
+			if str_match(k, datePattern) then -- Is a daily log entry
+--print(2)
+				numEntries = numEntries + (v.amount or 0) -- If the daily log exists but is empty, don't count this day
+				totalAmount = totalAmount + (v.amount or 0)
+			end
+		end
+	end
+	
+	DebugMsg(MODULE, "GetTotalAmount for toon = " .. fqcn .. " and container = " .. container .. " found numEntries = " .. numEntries .. ", totalAmount = " .. totalAmount)
+	
+	return totalAmount, numEntries
+
+end
 
 -- TODO: Ordering
 local ABC_DESC, ABC_ASC, GOLD_DESC, GOLD_ASC, OR_DESC, GOLD_ASC, CUSTOM = 1, 2, 3, 4, 5, 6, 7
@@ -173,9 +215,7 @@ function DB.Checkout()
 	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
 	
 		-- TODO: WIP - Read today's DB entry and output its data
-		local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key
-		-- Calculate gold earned since last reset (TODO: Not really "today" as it doesn't save data in the daily format yet)
-	--	local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] or 0
+		local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key	
 		
 		local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] and entry["LEGION_ORDER_HALL"]["GOLD"][today] and entry["LEGION_ORDER_HALL"]["GOLD"][today].amount or 0
 		local orderResourcesToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"]["amount"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today].amount or 0
@@ -212,6 +252,21 @@ function DB.Checkout()
 				ChatMsg("Gold earned (total): " .. formattedGoldTotal)
 				ChatMsg("OR spent (today): " .. formattedOrderResourcesToday)
 				ChatMsg("OR spent (total): " .. formattedOrderResourcesTotal)
+				
+				-- Display detailed character statistics (but only if there are some entries)
+				local STATISTICAL_SIGNIFICANT_THRESHOLD = 1 -- TODO - This is just to avoid Division by Zero errors, for now, but could become a setting later
+				local totalGoldAmount, numGoldEntries = DB.GetTotalAmount("GOLD", toon)
+				local totalOrderResourcesAmount, numOrderResourcesEntries = DB.GetTotalAmount("ORDER_RESOURCES", toon)	
+				-- Calculate statistics
+				local goldPerDay = (numGoldEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalGoldAmount / numGoldEntries) or 0
+				local orderResourcesPerDay = (numOrderResourcesEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalOrderResourcesAmount / numOrderResourcesEntries) or 0
+				
+				-- Format for output
+				local formattedTotalGoldAmount = GetCoinTextureString(totalGoldAmount)
+				local formattedTotalOrderResourcesAmount = math_abs(numOrderResourcesEntries) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+				ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. " over " .. formattedTotalOrderResourcesAmount .. " days ( " .. goldPerDay .. " per day)")
+				ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. " over " .. numOrderResourcesEntries .. " days ( " .. math_abs(orderResourcesPerDay) .. " per day)" )
+				
 				--- TODO: More stats?
 			end
 			
@@ -232,14 +287,6 @@ function DB.Checkout()
 	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
 	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
 
-end
-
--- Helper function (TODO: Upvalue)
-local function IsFQCN(str)
-
-	if not str or not str:match(".*%s-%s.*") then return false end
-	return true
-	
 end
 
 function DB.Reset() -- TODO: Reset other parts, too?
