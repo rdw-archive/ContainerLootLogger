@@ -44,7 +44,7 @@ local DebugMsg = CLL.Debug.Print
 local GetFQCN = CLL.GetFQCN
 
 
--- Print a formatted message
+-- Initialise DB in SavedVariables
 function DB.Init()
 
 	-- Create DB tables if necessary
