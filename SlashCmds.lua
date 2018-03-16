@@ -76,7 +76,7 @@ local helpText = {
 local function PrintSlashCmds()
 
 	for command, text in pairs(helpText) do -- Print text if any exists
-		if type(command) == "string" and type(text) == "string" then ChatMsg("/cll " .. command .. " " .. text) end -- TODO: Alias or full slash command?
+		if type(command) == "string" and type(text) == "string" then ChatMsg("/cll " .. command .. " - " .. text) end -- TODO: Alias or full slash command?
 	end
 
 end
