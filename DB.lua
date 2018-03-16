@@ -223,7 +223,7 @@ function DB.Checkout()
 			goldSinceLastReset = goldSinceLastReset + goldToday			
 			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] or {}
 			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0-- entry["LEGION_ORDER_HALL"]["GOLD"]["amount"]
-			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] or 0) -- entry["LEGION_ORDER_HALL"]["GOLD"]["count"]
+			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] or 0)
 			-- TODO: locale, type can remain unchanged?
 		end
 		
@@ -259,12 +259,11 @@ function DB.Checkout()
 				local goldPerDay = (numGoldEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalGoldAmount / numGoldEntries) or 0
 				local orderResourcesPerDay = (numOrderResourcesEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalOrderResourcesAmount / numOrderResourcesEntries) or 0
 				
-				-- Format for output
+				-- Format strings for output
 				local formattedTotalGoldAmount = GetCoinTextureString(totalGoldAmount)
 				local formattedGoldPerDay = GetCoinTextureString(goldPerDay)
 				local formattedTotalOrderResourcesAmount = math_abs(totalOrderResourcesAmount) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
 				local formattedTotalOrderResourcesPerDay = math_abs(orderResourcesPerDay) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
-				--ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. ((numGoldEntries > 1) and (" over " .. numGoldEntries .. " days ( " .. goldPerDay .. " per day)") or ""))
 
 				local goldBaseString = format("Total gold earned: %s", formattedTotalGoldAmount)
 				local goldNumEntriesString = (numGoldEntries > 1) and format(" over %d days", numGoldEntries) or "" -- Show if there is data for several days
@@ -277,12 +276,9 @@ function DB.Checkout()
 				local orderResourcesPerDayString = (numOrderResourcesEntries > 0) and format(" (%s per day)", formattedTotalOrderResourcesPerDay) or "" -- Show if there is any data
 				local orderResourcesSummaryString = orderResourcesBaseString .. orderResourcesNumEntriesString .. orderResourcesPerDayString
 				ChatMsg(orderResourcesSummaryString)	
-				
-				--ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. ((numGoldEntries > 1) and (" over " .. numGoldEntries .. " days") or "") .. ((numGoldEntries > 0 and totalGoldAmount > 0) and (" (" .. goldPerDay .. " per day)")) or "")
-				--ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. ((numOrderResourcesEntries > 1) and (" over " .. numOrderResourcesEntries .. " days") or "") .. ((numOrderResourcesEntries > 0 and totalOrderResourcesAmount > 0) and (" (" .. math_abs(orderResourcesPerDay) .. " per day)")) or "")
-				--ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. " over " .. numOrderResourcesEntries .. " day" .. ((numOrderResourcesEntries ~= 1) and "s" or "") .. " (" .. math_abs(orderResourcesPerDay) .. " per day)" )
-				
 				--- TODO: More stats?
+				-- Gold per OR
+
 			end
 			
 		end
@@ -298,8 +294,9 @@ function DB.Checkout()
 	-- Print summary
 	ChatMsg("-----------------------------------------------------------------------------------------------------------")
 	DebugMsg(MODULE,"Gold earned since last reset: " .. formattedGoldSinceLastReset .. " - old total: " .. formattedGoldTotalSum .. " - new total: " .. formattedGoldAfterNextReset)
+
+	ChatMsg("Gold earned (today): " .. formattedGoldSinceLastReset)
 	ChatMsg("Gold earned (total): " .. formattedGoldTotalSum)
-	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
 	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
 
 end
