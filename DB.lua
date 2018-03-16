@@ -39,6 +39,7 @@ local pairs = pairs
 local date = date
 local math_abs = math.abs
 local str_match = string.match
+local max = max
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local GetLocale = GetLocale
@@ -210,37 +211,40 @@ function DB.Checkout()
 	local showCurrentPlayerOnly = settings and settings.showCurrentPlayerOnly or false
 	local player = GetFQCN()
 	
-	local goldSinceLastReset, goldTotalSum = 0, 0
-	DebugMsg(MODULE, "Checking out characters...")	
+	local numDays, totalGold, totalOR, totalGoldToday, totalOrderResourcesToday = 0, 0, 0, 0, 0
+
+	DebugMsg(MODULE, "Checking out characters...")
 	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
 	
+		-- Some basic info can be looked up directly
 		local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key	
-		
-		local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] and entry["LEGION_ORDER_HALL"]["GOLD"][today] and entry["LEGION_ORDER_HALL"]["GOLD"][today].amount or 0
+		local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"].amount and entry["LEGION_ORDER_HALL"]["GOLD"][today] and entry["LEGION_ORDER_HALL"]["GOLD"][today].amount or 0
 		local orderResourcesToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"]["amount"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today].amount or 0
 		
-		if goldToday > 0 then -- This character has earned gold since last reset -> Always print it
-			goldSinceLastReset = goldSinceLastReset + goldToday			
-			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] or {}
-			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0-- entry["LEGION_ORDER_HALL"]["GOLD"]["amount"]
-			entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] or 0)
-			-- TODO: locale, type can remain unchanged?
-		end
+		-- Add this character's gold and OR to the grand total
+		local gold, numGold = DB.GetTotalAmount("GOLD", toon)
+		totalGold = totalGold + gold
+		totalGoldToday = totalGoldToday + goldToday
+		local OR, numOR = DB.GetTotalAmount("ORDER_RESOURCES", toon)
+		totalOR = totalOR + OR
+		totalOrderResourcesToday = totalOrderResourcesToday + orderResourcesToday
+		numDays = max(numDays, max(numGold, numOR)) -- If one entry is empty but the other exists, it is likely is that there simply was no gold mission for that day (and it is also assumed that all characters will be logged in for a given day, if any)
+--print(toon, gold, numGold, OR, numOR, numDays, totalGold, totalOR)
+		--DebugMsg(MODULE, )
 		
-		-- Calculate gold earned in total
-		local goldAfterNextReset = (type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0) + goldToday -- Add today's gold in the displayed total, without altering the DB entry (this will be done during resets)
-		if (goldToday > 0 or goldAfterNextReset > 0) or showEmpty then -- Display character in the summary
-			
-			-- Format numbers (TODO: thousands separator) for readability
-			local formattedGoldToday = GetCoinTextureString(goldToday)
-			local formattedGoldTotal = GetCoinTextureString(goldAfterNextReset)
-			local formattedOrderResourcesToday = math_abs(orderResourcesToday) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
-			local formattedOrderResourcesTotal = math_abs(orderResourcesTotal or orderResourcesToday or 0) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t" -- TODO. Read total from DB
-			
-			-- Show debug summary regardless of the user's settings
-			DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
+		-- Format numbers (TODO: thousands separator) for readability
+		local formattedGoldToday = GetCoinTextureString(goldToday)
+		local formattedGoldTotal = GetCoinTextureString(gold)
+		local formattedOrderResourcesToday = math_abs(orderResourcesToday) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+		local formattedOrderResourcesTotal = math_abs(OR) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+		
+		-- Show debug summary regardless of the user's settings (but not if there is no data of interest)
+		if (goldToday > 0 or orderResourcesToday > 0 or gold > 0 or OR > 0) then -- Character has at least some data, even if it may not be current
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned today: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
 			DebugMsg(MODULE, "[" .. tostring(toon) .. "] OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")		
-				
+		end
+		if (goldToday > 0) or orderResourcesToday or showEmpty then -- Display character in the summary
+			
 			if not showCurrentPlayerOnly or (showCurrentPlayerOnly and toon == player) then -- Display data for this toon
 				
 				ChatMsg("-----------------------------------------------------------------------------------------------------------")
@@ -282,22 +286,22 @@ function DB.Checkout()
 			end
 			
 		end
-		goldTotalSum = goldTotalSum + goldAfterNextReset - goldToday
-		
+
 	end
 	
 	-- Format numbers (TODO: thousands separator for large numbers) for readability
-	local formattedGoldSinceLastReset = GetCoinTextureString(goldSinceLastReset)
-	local formattedGoldTotalSum = GetCoinTextureString(goldTotalSum)
-	local formattedGoldAfterNextReset = GetCoinTextureString(goldTotalSum + goldSinceLastReset)
-	
+	local formattedGoldToday = GetCoinTextureString(totalGoldToday) -- TODO: sum up today gold/OR for ALL chars
+	local formattedGoldTotal = GetCoinTextureString(totalGold)
+	local formattedOrderResourcesToday = math_abs(totalOrderResourcesToday) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+	local formattedOrderResourcesTotal = math_abs(totalOR) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+		
 	-- Print summary
 	ChatMsg("-----------------------------------------------------------------------------------------------------------")
-	DebugMsg(MODULE,"Gold earned since last reset: " .. formattedGoldSinceLastReset .. " - old total: " .. formattedGoldTotalSum .. " - new total: " .. formattedGoldAfterNextReset)
-
-	ChatMsg("Gold earned (today): " .. formattedGoldSinceLastReset)
-	ChatMsg("Gold earned (total): " .. formattedGoldTotalSum)
-	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
+	ChatMsg("Printing Order Hall summary for all characters...")
+	ChatMsg("Gold earned today: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
+	ChatMsg("OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")
+	-- TODO: More stats - G/OR, OR/Day, G/Day, week, month, per char, etc. (see Excel sheet)
+	ChatMsg("-----------------------------------------------------------------------------------------------------------")
 
 end
 
