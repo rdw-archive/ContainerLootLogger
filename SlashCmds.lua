@@ -42,6 +42,7 @@ local validCommands = {
 	["gold"] = CLL.Statistics.PrintGold,
 	["checkout"] = CLL.DB.Checkout,
 	["co"] = CLL.DB.Checkout, -- Alias
+	["reset"] = CLL.DB.Reset,
 	
 }
 

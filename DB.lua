@@ -71,7 +71,7 @@ function DB.ValidateEntry(entry)
 	-- <link> = { amount = <total amount>, type = <currency, item, etc.>, locale = <client locale>, count = <no. of opened containers> }
 	local template = {
 		amount = "number",
-		type = "string",
+		type = "string", -- TODO: Temp workaround for GOLD_TOTAL not having it
 		--locale = "string", -- Not needed, as it will be added by DB.AddEntry automatically if omitted
 		count = "number", -- Will also be increased or initialised with 1 automatically
 	}
@@ -198,6 +198,44 @@ function DB.Checkout()
 	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
 	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
 
+end
+
+-- Helper function (TODO: Upvalue)
+local function IsFQCN(str)
+
+	if not str or not str:match(".*%s-%s.*") then return false end
+	return true
+	
+end
+
+function DB.Reset() -- TODO: Reset other parts, too?
+
+	for toon, entry in pairs(ContainerLootLoggerDB) do
+		
+		if IsFQCN(toon) then -- Is a an entry for a character, and not a general DB setting (TODO: DB structured into toons/settings part for v2?)
+			
+			local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] or 0
+			if goldToday > 0 then
+				
+				local goldTotal = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0
+				local newGoldTotal = goldTotal + goldToday
+				DebugMsg(MODULE, "Resetting entry for character " .. toon .. " - " .. GetCoinTextureString(entry["LEGION_ORDER_HALL"]["GOLD"]["amount"]) .. " earned today ( " .. GetCoinTextureString(newGoldTotal) .. " in total, was " .. GetCoinTextureString(goldTotal) .. " at the time of the last reset)") 
+
+				-- Copy entry from GOLD to GOLD_TOTAL and add counts
+				entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] = entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] or {}
+				entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0) + entry["LEGION_ORDER_HALL"]["GOLD"]["amount"]
+				entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] = (entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["count"] or 0) + entry["LEGION_ORDER_HALL"]["GOLD"]["count"]
+				
+				-- Reset the current entry
+				entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] = 0
+				entry["LEGION_ORDER_HALL"]["GOLD"]["count"] = 0
+				
+			else
+				DebugMsg(MODULE, "Nothing to reset for character " .. toon)
+			end
+		end
+	end
+	
 end
 
 -- Add module to shared environment
