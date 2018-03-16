@@ -189,7 +189,7 @@ function DB.Checkout()
 			local formattedGoldToday = GetCoinTextureString(goldToday)
 			local formattedGoldTotal = GetCoinTextureString(goldAfterNextReset)
 		
-			DebugMsg(MODULE, "[" .. tostring(toon) .. "] TODAY: " .. formattedGoldToday .. " - TOTAL: " .. formattedGoldTotal)
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
 			
 			if not showCurrentPlayerOnly or (showCurrentPlayerOnly and toon == player) then -- Display data for this toon
 				ChatMsg("-----------------------------------------------------------------------------------------------------------")
@@ -210,7 +210,7 @@ function DB.Checkout()
 	
 	-- Print summary
 	ChatMsg("-----------------------------------------------------------------------------------------------------------")
-	DebugMsg(MODULE,"Gold earned - TODAY: " .. formattedGoldSinceLastReset .. " - OLD TOTAL: " .. formattedGoldTotalSum .. " - NEW TOTAL: " .. formattedGoldAfterNextReset)
+	DebugMsg(MODULE,"Gold earned since last reset: " .. formattedGoldSinceLastReset .. " - old total: " .. formattedGoldTotalSum .. " - new total: " .. formattedGoldAfterNextReset)
 	ChatMsg("Gold earned (total): " .. formattedGoldTotalSum)
 	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
 	ChatMsg("Gold earned (after next reset): " .. formattedGoldAfterNextReset)
