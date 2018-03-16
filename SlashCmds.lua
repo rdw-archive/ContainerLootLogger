@@ -92,9 +92,10 @@ local validCommands = {
 	["start"] = CLL.Tracking.Start,
 	["stop"] = CLL.Tracking.Stop,
 	
-	["gold"] = CLL.Statistics.PrintGold,
 	["on"] = SlashCmds.SlashOn,
 	["off"] = SlashCmds.SlashOff,
+	
+	["gold"] = CLL.Statistics.PrintGold, -- TODO - useless? should replace checkout eventually with more statistics
 	["checkout"] = CLL.DB.Checkout,
 	["co"] = CLL.DB.Checkout, -- Alias
 	["reset"] = CLL.DB.Reset,
