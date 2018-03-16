@@ -17,30 +17,35 @@
 local addonName, CLL = ...
 if not CLL then return end
 
+local Settings = {}
 
--- Initialise environment
-local Debug = {}
+-- Locals and constants
+local MODULE = "Settings"
 
-
--- Upvalues
-local print = print
-local format = format
-
-
--- Print a formatted debug message
-function Debug.Print(MODULE, msg)
-
-	if not CLL.SettingsDB.profile.settings.core.debugMode then return end
-
-	if not MODULE and msg then
-		msg = msg or MODULE or "UNKNOWN_MESSAGE"
-		MODULE = "UNKNOWN_MODULE"
-	end
+local defaultSettings = {
 	
-	print(format("|c000072CA" .. "%s-|c0033A5FD" .. MODULE .. ": " .. "|c00E6CC80%s", "CLL", msg))
+	core = { -- General settings that affect all modules
+		isEnabled = true, -- Is logging enabled?
+		debugMode = false, -- Will debug info be shown?
+	},
+	
+}
+
+local settings = {
+	global = {}, -- TODO: DB would belong here, but I'm not a fan of having AceDB blow up any existing metatables for this 
+
+	profile = { -- Settings go here
+		settings = defaultSettings,
+	},
+}
+
+-- Initialise Settings in SavedVariables
+function Settings.Init()
+
+	-- Let AceDB handle this
+	CLL.SettingsDB = LibStub("AceDB-3.0"):New("ContainerLootLoggerSettings", settings, true)
 	
 end
 
-
 -- Add module to shared environment
-CLL.Debug = Debug
+CLL.Settings = Settings

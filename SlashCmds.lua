@@ -26,23 +26,81 @@ local SlashCmds = {}
 local L = CLL.L
 local ChatMsg = CLL.Output.Print
 local type = type
+local pairs = pairs
 
+-- Configuration slash commands
+-- Manually disables logging
+function SlashCmds.SlashOff()
+	
+	if CLL.SettingsDB.profile.settings.core.isEnabled then -- Turn it off
+		CLL.SettingsDB.profile.settings.core.isEnabled = false
+		ChatMsg("Logging is now disabled")
+	else
+		ChatMsg("Logging is already disabled")
+	end
+	
+end
+
+-- Manually enables logging
+function SlashCmds.SlashOn()
+	
+	if not CLL.SettingsDB.profile.settings.core.isEnabled then -- Turn it on
+		CLL.SettingsDB.profile.settings.core.isEnabled = true
+		ChatMsg("Logging is now enabled")
+	else
+		ChatMsg("Logging is already enabled")
+	end
+	
+end
+
+-- Toggle debug mode
+function SlashCmds.SlashDebug()
+	
+	if not CLL.SettingsDB.profile.settings.core.debugMode then -- Turn it on
+		CLL.SettingsDB.profile.settings.core.debugMode = true
+		ChatMsg("Debug Mode is now ON")
+	else -- Turn it off
+		CLL.SettingsDB.profile.settings.core.debugMode = false
+		ChatMsg("Debug Mode is now OFF")
+	end
+	
+end
+
+local helpText = {
+	["(on|off)"] = "Enable or disable the addon's logging functionality (e.g., to stop logging temporarily)",
+	["(checkout|co)"] = "Print the Order Hall summary",
+	["debug"] = "Show additional (mostly technical) info that can be used to troubleshoot problems",
+}
+
+-- Display the help text for each slash command
+local function PrintSlashCmds()
+
+	for command, text in pairs(helpText) do -- Print text if any exists
+		if type(command) == "string" and type(text) == "string" then ChatMsg("/cll " .. command .. " - " .. text) end -- TODO: Alias or full slash command?
+	end
+
+end
 
 -- List of supported slash commands
 local validCommands = {
 	
 	["help"] = function()
 		ChatMsg(L["List of valid slash commands:"])
-		ChatMsg("--- TODO ---")
+		PrintSlashCmds()
 	end,
 	
 	["start"] = CLL.Tracking.Start,
 	["stop"] = CLL.Tracking.Stop,
 	
-	["gold"] = CLL.Statistics.PrintGold,
+	["on"] = SlashCmds.SlashOn,
+	["off"] = SlashCmds.SlashOff,
+	
+	["gold"] = CLL.Statistics.PrintGold, -- TODO - useless? should replace checkout eventually with more statistics
 	["checkout"] = CLL.DB.Checkout,
 	["co"] = CLL.DB.Checkout, -- Alias
 	["reset"] = CLL.DB.Reset,
+	
+	["debug"] = SlashCmds.SlashDebug,
 	
 }
 

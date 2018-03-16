@@ -27,6 +27,7 @@ local ChatMsg = CLL.Output.Print
 function ContainerLootLogger:OnInitialize()
 	
 	-- Initialise DB if necessary
+	CLL.Settings.Init()
 	CLL.DB.Init()
 	
 	-- Register slash commands

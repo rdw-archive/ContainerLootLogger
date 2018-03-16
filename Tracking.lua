@@ -128,6 +128,11 @@ function Tracking.Start()
 		return
 	end
 
+	if not CLL.SettingsDB.profile.settings.core.isEnabled then -- Tracking is disabled (TODO: Logging is a more accurate name after the rework)
+		DebugMsg(MODULE, "Stopped logging because Tracking is disabled")
+		return
+	end
+	
 	currentGoldValue = GetMoney()
 	currentOrderResources = select(2, GetCurrencyInfo(1220)) or 0
 	
@@ -166,6 +171,11 @@ end
 
 -- Stop tracking and store the results
 function Tracking.Stop(container)
+
+	if not CLL.SettingsDB.profile.settings.core.isEnabled then -- Tracking is disabled (TODO: Logging is a more accurate name after the rework)
+		DebugMsg(MODULE, "No results to store, because Tracking is disabled")
+		return
+	end
 	
 	local oldGoldValue = currentGoldValue
 	local oldOrderResources = currentOrderResources
