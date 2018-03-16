@@ -28,10 +28,13 @@ local DebugMsg = CLL.Debug.Print
 local match = string.match
 local tostring = tostring
 local pairs = pairs
+local select = select
+local type = type
 local L = CLL.L
 local wipe = wipe
 local GetLocale = GetLocale
 local GetCoinTextureString = GetCoinTextureString
+local GetCurrencyInfo = GetCurrencyInfo
 local GetMoney = GetMoney
 
 -- Locals and constants
@@ -39,6 +42,7 @@ local MODULE = "Tracking"
 local LOOT_STRING = L["You receive item: "]
 local CURRENCY_STRING = L["You receive currency: "] 
 local currentGoldValue = 0
+local currentOrderResources = 0
 
 -- Parses a chat message and extracts the obtained item or currency info (if available)
 -- @param msg The captured chat message
@@ -125,7 +129,9 @@ function Tracking.Start()
 	end
 
 	currentGoldValue = GetMoney()
-	DebugMsg(MODULE, "Tracking started with " .. GetCoinTextureString(currentGoldValue) .. ". Registering for events...")
+	currentOrderResources = select(2, GetCurrencyInfo(1220)) or 0
+	
+	DebugMsg(MODULE, "Tracking started with " .. GetCoinTextureString(currentGoldValue) .. " & " .. currentOrderResources .. " OR. Registering for events...")
 	
 	-- Re-start the scan and scrub any previous results
 	CLL.Tracking.isActive = true
@@ -162,8 +168,11 @@ end
 function Tracking.Stop(container)
 	
 	local oldGoldValue = currentGoldValue
+	local oldOrderResources = currentOrderResources
 	currentGoldValue = GetMoney()
-	DebugMsg(MODULE, "Tracking stopped with " .. GetCoinTextureString(currentGoldValue) .. "Unregistering events...")
+	currentOrderResources = select(2, GetCurrencyInfo(1220)) or 0
+	
+	DebugMsg(MODULE, "Tracking stopped with " .. GetCoinTextureString(currentGoldValue) .. " & " .. currentOrderResources .. " OR. Unregistering events...")
 	local goldChange = currentGoldValue - oldGoldValue
 	if goldChange > 0 then -- Update DB entry (TODO: Parse chat is still necessary to get all the rewards?)
 		ChatMsg("Gold change detected: " .. GetCoinTextureString(goldChange))
@@ -173,6 +182,17 @@ function Tracking.Stop(container)
 		if goldChange < 0 then
 			DebugMsg(MODULE, "Negative gold change while tracking is in progress - you're doing it wrong!")
 		end
+	end
+	-- TODO: Generalize this to work with all items/currency (PS, BOS, etc.? - let user set what to track)
+	local orderResourcesChange = currentOrderResources - oldOrderResources
+	if type(orderResourcesChange) == "number" then -- Update DB entry
+		ChatMsg("OR change detected: " .. orderResourcesChange)
+		local orderResourcesEntry = { amount = orderResourcesChange, type = "currency", count = 1 }
+		CLL.DB.AddEntry("ORDER_RESOURCES", orderResourcesEntry, container)
+	else
+		-- if orderResourcesChange < 0 then
+			-- DebugMsg(MODULE, "Negative order resources change while tracking is in progress - you're doing it wrong!")
+		-- end
 	end
 	
 	CLL.Tracking.isActive = false
