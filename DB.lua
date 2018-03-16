@@ -202,7 +202,7 @@ local settings = {
 	showCurrentPlayerOnly = true, -- Only display summary for the logged-in character
 }
 
--- Checkout the current and total gold logged (read-only, so this can be used at will)
+-- Checkout the current and total gold logged (read-only, so this can be used deliberately)
 function DB.Checkout()
 
 	-- Print summary of the gold earnings since last reset
@@ -242,10 +242,10 @@ function DB.Checkout()
 			local formattedOrderResourcesToday = math_abs(orderResourcesToday) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
 			local formattedOrderResourcesTotal = math_abs(orderResourcesTotal or orderResourcesToday or 0) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t" -- TODO. Read total from DB
 			
-			DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
-			DebugMsg(MODULE, "[" .. tostring(toon) .. "] OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")
-			
 			if not showCurrentPlayerOnly or (showCurrentPlayerOnly and toon == player) then -- Display data for this toon
+			
+				DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
+				DebugMsg(MODULE, "[" .. tostring(toon) .. "] OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")			
 				ChatMsg("-----------------------------------------------------------------------------------------------------------")
 				ChatMsg("Showing data for [" .. tostring(toon) .. "]")
 				ChatMsg("Gold earned (today): " .. formattedGoldToday)
@@ -256,16 +256,34 @@ function DB.Checkout()
 				-- Display detailed character statistics (but only if there are some entries)
 				local STATISTICAL_SIGNIFICANT_THRESHOLD = 1 -- TODO - This is just to avoid Division by Zero errors, for now, but could become a setting later
 				local totalGoldAmount, numGoldEntries = DB.GetTotalAmount("GOLD", toon)
-				local totalOrderResourcesAmount, numOrderResourcesEntries = DB.GetTotalAmount("ORDER_RESOURCES", toon)	
+				local totalOrderResourcesAmount, numOrderResourcesEntries = DB.GetTotalAmount("ORDER_RESOURCES", toon)
+
 				-- Calculate statistics
 				local goldPerDay = (numGoldEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalGoldAmount / numGoldEntries) or 0
 				local orderResourcesPerDay = (numOrderResourcesEntries >= STATISTICAL_SIGNIFICANT_THRESHOLD) and (totalOrderResourcesAmount / numOrderResourcesEntries) or 0
 				
 				-- Format for output
 				local formattedTotalGoldAmount = GetCoinTextureString(totalGoldAmount)
-				local formattedTotalOrderResourcesAmount = math_abs(numOrderResourcesEntries) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
-				ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. " over " .. formattedTotalOrderResourcesAmount .. " days ( " .. goldPerDay .. " per day)")
-				ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. " over " .. numOrderResourcesEntries .. " days ( " .. math_abs(orderResourcesPerDay) .. " per day)" )
+				local formattedGoldPerDay = GetCoinTextureString(goldPerDay)
+				local formattedTotalOrderResourcesAmount = math_abs(totalOrderResourcesAmount) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+				local formattedTotalOrderResourcesPerDay = math_abs(orderResourcesPerDay) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
+				--ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. ((numGoldEntries > 1) and (" over " .. numGoldEntries .. " days ( " .. goldPerDay .. " per day)") or ""))
+
+				local goldBaseString = format("Total gold earned: %s", formattedTotalGoldAmount)
+				local goldNumEntriesString = (numGoldEntries > 1) and format(" over %d days", numGoldEntries) or "" -- Show if there is data for several days
+				local goldPerDayString = (numGoldEntries > 0) and format(" (%s per day)", formattedGoldPerDay) or "" -- Show if there is any data
+				local goldSummaryString = goldBaseString .. goldNumEntriesString .. goldPerDayString
+				ChatMsg(goldSummaryString)
+				
+				local orderResourcesBaseString = format("Total OR spent: %s", formattedTotalOrderResourcesAmount)
+				local orderResourcesNumEntriesString = (numOrderResourcesEntries > 1) and format(" over %d days", numOrderResourcesEntries) or "" -- Show if there is data for several days
+				local orderResourcesPerDayString = (numOrderResourcesEntries > 0) and format(" (%s per day)", formattedTotalOrderResourcesPerDay) or "" -- Show if there is any data
+				local orderResourcesSummaryString = orderResourcesBaseString .. orderResourcesNumEntriesString .. orderResourcesPerDayString
+				ChatMsg(orderResourcesSummaryString)	
+				
+				--ChatMsg("Total gold earned: " .. formattedTotalGoldAmount .. ((numGoldEntries > 1) and (" over " .. numGoldEntries .. " days") or "") .. ((numGoldEntries > 0 and totalGoldAmount > 0) and (" (" .. goldPerDay .. " per day)")) or "")
+				--ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. ((numOrderResourcesEntries > 1) and (" over " .. numOrderResourcesEntries .. " days") or "") .. ((numOrderResourcesEntries > 0 and totalOrderResourcesAmount > 0) and (" (" .. math_abs(orderResourcesPerDay) .. " per day)")) or "")
+				--ChatMsg("Total OR spent: " .. formattedTotalOrderResourcesAmount .. " over " .. numOrderResourcesEntries .. " day" .. ((numOrderResourcesEntries ~= 1) and "s" or "") .. " (" .. math_abs(orderResourcesPerDay) .. " per day)" )
 				
 				--- TODO: More stats?
 			end
