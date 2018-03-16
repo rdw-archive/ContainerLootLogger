@@ -1,7 +1,7 @@
-## Interface: 70100
+## Interface: 70300
 ## Title: ContainerLootLogger
-## Version: 1.0
-## Notes: Tracks what items have been obtained from containers (and disenchanting)
+## Version: 0.1-alpha
+## Notes: Tracks what items have been obtained from Salvage Crates and Garrison/OH missions (other containers NYI)
 ## Author: Cakechart
 ## SavedVariables: ContainerLootLoggerDB, ContainerLootLoggerSettings
 ## OptionalDeps: Libs\LibStub\LibStub.lua, Ace3
