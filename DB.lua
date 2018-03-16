@@ -169,19 +169,30 @@ function DB.Checkout()
 		
 		-- Calculate gold earned in total
 		local goldAfterNextReset = (type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"] and entry["LEGION_ORDER_HALL"]["GOLD_TOTAL"]["amount"] or 0) + goldToday -- Add today's gold in the displayed total, without altering the DB entry (this will be done during resets)
-		if (goldToday > 0 or goldAfterNextReset > 0) or showEmpty then -- Also display empty character entries in the summary
-			DebugMsg(MODULE, "[" .. tostring(toon) .. "] TODAY: " .. GetCoinTextureString(goldToday) .. " - TOTAL: " .. GetCoinTextureString(goldAfterNextReset))
+		if (goldToday > 0 or goldAfterNextReset > 0) or showEmpty then -- Display character in the summary
+			
+			-- Format numbers (TODO: thousands separator) for readability
+			local formattedGoldToday = GetCoinTextureString(goldToday)
+			local formattedGoldTotal = GetCoinTextureString(goldAfterNextReset)
+		
+			ChatMsg("-----------------------------------------------------------------------------------------------------------")
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] TODAY: " .. formattedGoldToday .. " - TOTAL: " .. formattedGoldTotal)
+			ChatMsg("Showing data for [" .. tostring(toon) .. "]")
+			ChatMsg("Gold earned (today): " .. formattedGoldToday)
+			ChatMsg("Gold earned (total): " .. formattedGoldTotal)
+			
 		end
 		goldTotalSum = goldTotalSum + goldAfterNextReset - goldToday
 		
 	end
 	
-	-- Format numbers (TODO) for readability
+	-- Format numbers (TODO: thousands separator for large numbers) for readability
 	local formattedGoldSinceLastReset = GetCoinTextureString(goldSinceLastReset)
 	local formattedGoldTotalSum = GetCoinTextureString(goldTotalSum)
 	local formattedGoldAfterNextReset = GetCoinTextureString(goldTotalSum + goldSinceLastReset)
 	
 	-- Print summary
+	ChatMsg("-----------------------------------------------------------------------------------------------------------")
 	DebugMsg(MODULE,"Gold earned - TODAY: " .. formattedGoldSinceLastReset .. " - OLD TOTAL: " .. formattedGoldTotalSum .. " - NEW TOTAL: " .. formattedGoldAfterNextReset)
 	ChatMsg("Gold earned (total): " .. formattedGoldTotalSum)
 	ChatMsg("Gold earned (since last reset): " .. formattedGoldSinceLastReset)
