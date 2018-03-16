@@ -214,15 +214,10 @@ function DB.Checkout()
 	DebugMsg(MODULE, "Checking out characters...")	
 	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
 	
-		-- TODO: WIP - Read today's DB entry and output its data
 		local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key	
 		
 		local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] and entry["LEGION_ORDER_HALL"]["GOLD"][today] and entry["LEGION_ORDER_HALL"]["GOLD"][today].amount or 0
 		local orderResourcesToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"]["amount"] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today] and entry["LEGION_ORDER_HALL"]["ORDER_RESOURCES"][today].amount or 0
-		
-		if goldToday > 0 or orderResourcesToday < 0 then
---			DebugMsg(MODULE, toon .. " --- > NEW_GOLD_TODAY is " .. goldToday .. ", orderResourcesToday is " .. orderResourcesToday)
-		end
 		
 		if goldToday > 0 then -- This character has earned gold since last reset -> Always print it
 			goldSinceLastReset = goldSinceLastReset + goldToday			
@@ -242,10 +237,12 @@ function DB.Checkout()
 			local formattedOrderResourcesToday = math_abs(orderResourcesToday) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t"
 			local formattedOrderResourcesTotal = math_abs(orderResourcesTotal or orderResourcesToday or 0) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t" -- TODO. Read total from DB
 			
+			-- Show debug summary regardless of the user's settings
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
+			DebugMsg(MODULE, "[" .. tostring(toon) .. "] OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")		
+				
 			if not showCurrentPlayerOnly or (showCurrentPlayerOnly and toon == player) then -- Display data for this toon
-			
-				DebugMsg(MODULE, "[" .. tostring(toon) .. "] Gold earned since last reset: " .. formattedGoldToday .. " (Total: " .. formattedGoldTotal .. ")")
-				DebugMsg(MODULE, "[" .. tostring(toon) .. "] OR spent today: " .. formattedOrderResourcesToday .. " (Total: " .. formattedOrderResourcesTotal .. ")")			
+				
 				ChatMsg("-----------------------------------------------------------------------------------------------------------")
 				ChatMsg("Showing data for [" .. tostring(toon) .. "]")
 				ChatMsg("Gold earned (today): " .. formattedGoldToday)
