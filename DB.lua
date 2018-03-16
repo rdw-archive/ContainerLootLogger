@@ -185,7 +185,7 @@ function DB.GetTotalAmount(container, fqcn)
 		end
 	end
 	
-	DebugMsg(MODULE, "GetTotalAmount for toon = " .. fqcn .. " and container = " .. container .. " found numEntries = " .. numEntries .. ", totalAmount = " .. totalAmount)
+--	DebugMsg(MODULE, "GetTotalAmount for toon = " .. fqcn .. " and container = " .. container .. " found numEntries = " .. numEntries .. ", totalAmount = " .. totalAmount)
 	
 	return totalAmount, numEntries
 
