@@ -185,7 +185,7 @@ function Tracking.Stop(container)
 	DebugMsg(MODULE, "Tracking stopped with " .. GetCoinTextureString(currentGoldValue) .. " & " .. currentOrderResources .. " OR. Unregistering events...")
 	local goldChange = currentGoldValue - oldGoldValue
 	if goldChange > 0 then -- Update DB entry (TODO: Parse chat is still necessary to get all the rewards?)
-		ChatMsg("Gold change detected: " .. GetCoinTextureString(goldChange))
+		ChatMsg("Gold earned: " .. GetCoinTextureString(goldChange))
 		local goldEntry = { amount = goldChange, type = "gold", count = 1 }
 		CLL.DB.AddEntry("GOLD", goldEntry, container)
 	else
@@ -195,8 +195,8 @@ function Tracking.Stop(container)
 	end
 	-- TODO: Generalize this to work with all items/currency (PS, BOS, etc.? - let user set what to track)
 	local orderResourcesChange = currentOrderResources - oldOrderResources
-	if type(orderResourcesChange) == "number" then -- Update DB entry
-		ChatMsg("OR change detected: " .. orderResourcesChange)
+	if type(orderResourcesChange) == "number" and orderResourcesChange ~= 0 then -- Update DB entry
+		ChatMsg("OR spent: " .. math_abs(orderResourcesChange) .. " |TInterface\\Icons\\inv_orderhall_orderresources:12|t") -- TODO: Util functions to format this?
 		local orderResourcesEntry = { amount = orderResourcesChange, type = "currency", count = 1 }
 		CLL.DB.AddEntry("ORDER_RESOURCES", orderResourcesEntry, container)
 	else
