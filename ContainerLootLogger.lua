@@ -28,6 +28,7 @@ function ContainerLootLogger:OnInitialize()
 	
 	-- Initialise DB if necessary
 	CLL.DB.Init()
+	CLL.Settings.Init()
 	
 	-- Register slash commands
 	self:RegisterChatCommand("cll", CLL.SlashCmds.InputHandler)

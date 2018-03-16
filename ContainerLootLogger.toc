@@ -3,8 +3,8 @@
 ## Version: 1.0
 ## Notes: Tracks what items have been obtained from containers (and disenchanting)
 ## Author: Cakechart
-## SavedVariables: ContainerLootLoggerDB
-## OptionalDeps:Libs\LibStub\LibStub.lua,Ace3
+## SavedVariables: ContainerLootLoggerDB, ContainerLootLoggerSettings
+## OptionalDeps: Libs\LibStub\LibStub.lua, Ace3
 
 Locales\Locales.xml
 
@@ -15,6 +15,7 @@ Init.lua
 Debug.lua
 Output.lua
 
+Settings.lua
 DB.lua
 Detection.lua
 Tracking.lua
@@ -30,6 +31,7 @@ ContainerLootLogger.lua
 Libs\LibStub\LibStub.lua
 Libs\AceAddon-3.0\AceAddon-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 #@end-no-lib-strip@
