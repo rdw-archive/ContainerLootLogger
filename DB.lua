@@ -172,6 +172,8 @@ function DB.Checkout()
 	DebugMsg(MODULE, "Checking out characters...")	
 	for toon, entry in pairs(ContainerLootLoggerDB) do -- Check if this toon has an entry that needs to be printed
 	
+		-- TODO: WIP - Read today's DB entry and output its data
+		local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key
 		-- Calculate gold earned since last reset (TODO: Not really "today" as it doesn't save data in the daily format yet)
 	--	local goldToday = type(entry) == "table" and entry["LEGION_ORDER_HALL"] and entry["LEGION_ORDER_HALL"]["GOLD"] and entry["LEGION_ORDER_HALL"]["GOLD"]["amount"] or 0
 		
