@@ -21,7 +21,7 @@ local Settings = {}
 
 -- Locals and constants
 local MODULE = "Settings"
-local defaultSettings = {
+local settings = {
 	global = {}, -- TODO: DB would belong here, but I'm not a fan of having AceDB blow up any existing metatables for this 
 
 	profile = { -- Settings go here
@@ -33,7 +33,7 @@ local defaultSettings = {
 function Settings.Init()
 
 	-- Let AceDB handle this
-	CLL.SettingsDB = LibStub("AceDB-3.0"):New("ContainerLootLoggerSettings", defaultSettings, true)
+	CLL.SettingsDB = LibStub("AceDB-3.0"):New("ContainerLootLoggerSettings", settings, true)
 	
 end
 
