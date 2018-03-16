@@ -36,6 +36,7 @@ local format = format
 local tonumber = tonumber
 local tostring = tostring
 local pairs = pairs
+local date = date
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local GetLocale = GetLocale
@@ -131,6 +132,16 @@ function DB.AddEntry(key, entry, container, fqcn)
 	ContainerLootLoggerDB[fqcn][container][key].locale = ContainerLootLoggerDB[fqcn][container][key].locale or GetLocale() -- ditto
 	
 	--ContainerLootLoggerDB[fqcn][container].numContainersOpened = ContainerLootLoggerDB[fqcn][container].numContainersOpened + numOpenings
+	
+	-- Add entry for the current day (to allow statistical analysis later on)
+	local today = date("%d-%m-%Y") -- e.g., 09-11-2001 -> to be used as key
+	ContainerLootLoggerDB[fqcn][container][key][today] = ContainerLootLoggerDB[fqcn][container][key][today] or {} -- Create new entry if none exists
+	ContainerLootLoggerDB[fqcn][container][key][today].count = (ContainerLootLoggerDB[fqcn][container][key][today].count or 0) + (entry.count or 0)
+	ContainerLootLoggerDB[fqcn][container][key][today].amount = (ContainerLootLoggerDB[fqcn][container][key][today].amount or 0) + (entry.amount or 0)
+
+	local countToday = ContainerLootLoggerDB[fqcn][container][key][today].count
+	local amountToday = ContainerLootLoggerDB[fqcn][container][key][today].amount
+	DebugMsg(MODULE, "Updated entry for " .. container ..  " with date [" .. today .. "]: count = " .. countToday .. ", amount = " .. amountToday)
 	
 end
 
