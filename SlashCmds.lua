@@ -85,7 +85,7 @@ end
 local validCommands = {
 	
 	["help"] = function()
-		ChatMsg(L["List of valid slash commands:"])
+		ChatMsg(L["[List of available commands]"])
 		PrintSlashCmds()
 	end,
 	

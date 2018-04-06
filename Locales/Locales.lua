@@ -14,7 +14,7 @@ L["Debug mode disabled."] = true;
 
 -- Rewritten stuff below (TODO: Remove the rest once the rewrite is done)
 L["%s %s for WOW %s loaded! Type /cll or /containerlootlogger if you need help :)"] = true
-L["List of valid slash commands:"] = true
+L["[List of available commands]"] = true
 L["You receive item: "] = true
 L["You receive currency: "] = true
 L["You receive (%d+) Gold"] = true
