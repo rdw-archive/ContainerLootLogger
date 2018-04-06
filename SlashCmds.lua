@@ -53,6 +53,16 @@ function SlashCmds.SlashOn()
 	
 end
 
+function SlashCmds.SlashToggle()
+
+	if CLL.SettingsDB.profile.settings.core.isEnabled then
+		SlashCmds.SlashOff()
+	else
+		SlashCmds.SlashOn()
+	end
+
+end
+
 -- Toggle debug mode
 function SlashCmds.SlashDebug()
 	
@@ -94,6 +104,7 @@ local validCommands = {
 	
 	["on"] = SlashCmds.SlashOn,
 	["off"] = SlashCmds.SlashOff,
+	["toggle"] = SlashCmds.SlashToggle,
 	
 	["gold"] = CLL.Statistics.PrintGold, -- TODO - useless? should replace checkout eventually with more statistics
 	["checkout"] = CLL.DB.Checkout,
